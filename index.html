@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Volvemos por Ti — ZUMOTEC</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #0F2A4A; --navy-soft: #1a3a5c; --cyan: #00C9C8; --cyan-light: #e0f7f7;
+    --white: #ffffff; --gray-50: #f8fafc; --gray-100: #f1f5f9; --gray-200: #e2e8f0;
+    --gray-400: #94a3b8; --gray-600: #475569; --gray-800: #1e293b;
+    --alta: #ef4444; --alta-bg: #fef2f2; --media: #f59e0b; --media-bg: #fffbeb;
+    --baja: #10b981; --baja-bg: #f0fdf4; --perfilado: #8b5cf6; --perfilado-bg: #f5f3ff;
+    --radius: 14px; --radius-sm: 8px; --shadow: 0 2px 12px rgba(15,42,74,0.10);
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--gray-100); color: var(--gray-800); min-height: 100vh; padding-bottom: 80px; }
+  .header { background: var(--navy); padding: 16px 20px 14px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 16px rgba(0,0,0,0.2); }
+  .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .logo { color: var(--white); font-size: 1.25rem; font-weight: 800; letter-spacing: -0.03em; }
+  .logo span { color: var(--cyan); }
+  .campana-badge { background: var(--cyan); color: var(--navy); font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 100px; }
+  .header-sub { color: rgba(255,255,255,0.5); font-size: 0.72rem; }
+  .kpi-strip { background: var(--navy-soft); padding: 10px 20px; display: flex; overflow-x: auto; scrollbar-width: none; }
+  .kpi-strip::-webkit-scrollbar { display: none; }
+  .kpi { flex: 0 0 auto; text-align: center; padding: 0 16px; border-right: 1px solid rgba(255,255,255,0.1); min-width: 76px; }
+  .kpi:last-child { border-right: none; }
+  .kpi-val { color: var(--cyan); font-size: 1.35rem; font-weight: 800; line-height: 1; }
+  .kpi-label { color: rgba(255,255,255,0.5); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 3px; }
+  .tabs { display: flex; background: var(--white); border-bottom: 2px solid var(--gray-200); position: sticky; top: 80px; z-index: 90; }
+  .tab { flex: 1; text-align: center; padding: 12px 8px; font-size: 0.78rem; font-weight: 600; color: var(--gray-400); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; user-select: none; }
+  .tab.active { color: var(--navy); border-bottom-color: var(--cyan); }
+  .tab-icon { display: block; font-size: 1.1rem; margin-bottom: 2px; }
+  .screen { display: none; padding: 16px; }
+  .screen.active { display: block; }
+  .search-wrap { position: relative; margin-bottom: 14px; }
+  .search-input { width: 100%; padding: 12px 16px 12px 42px; border: 2px solid var(--gray-200); border-radius: var(--radius); font-size: 0.9rem; background: var(--white); color: var(--gray-800); outline: none; transition: border-color 0.2s; }
+  .search-input:focus { border-color: var(--cyan); }
+  .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--gray-400); }
+  .filtros { display: flex; gap: 8px; margin-bottom: 14px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .filtros::-webkit-scrollbar { display: none; }
+  .filtro-btn { flex: 0 0 auto; padding: 6px 14px; border-radius: 100px; font-size: 0.75rem; font-weight: 600; border: 2px solid var(--gray-200); background: var(--white); color: var(--gray-600); cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+  .filtro-btn.f-todos { border-color: var(--navy); background: var(--navy); color: var(--white); }
+  .filtro-btn.f-pendiente { border-color: var(--gray-400); background: var(--gray-100); color: var(--gray-600); }
+  .filtro-btn.f-contactado { border-color: #3b82f6; background: #dbeafe; color: #1d4ed8; }
+  .filtro-btn.f-perfilado { border-color: var(--perfilado); background: var(--perfilado-bg); color: var(--perfilado); }
+  .filtro-btn.f-alta { border-color: var(--alta); background: var(--alta-bg); color: var(--alta); }
+  .filtro-btn.f-media { border-color: var(--media); background: var(--media-bg); color: var(--media); }
+  .filtro-btn.f-baja { border-color: var(--baja); background: var(--baja-bg); color: var(--baja); }
+  .cliente-card { background: var(--white); border-radius: var(--radius); margin-bottom: 10px; box-shadow: var(--shadow); overflow: hidden; cursor: pointer; transition: transform 0.15s; border-left: 4px solid transparent; }
+  .cliente-card:active { transform: scale(0.98); }
+  .cliente-card.prioridad-alta { border-left-color: var(--alta); }
+  .cliente-card.prioridad-media { border-left-color: var(--media); }
+  .cliente-card.prioridad-baja { border-left-color: var(--baja); }
+  .card-body { padding: 14px 16px; }
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
+  .cliente-nombre { font-size: 0.88rem; font-weight: 700; color: var(--navy); line-height: 1.3; flex: 1; }
+  .estado-pill { flex: 0 0 auto; font-size: 0.65rem; font-weight: 700; padding: 3px 10px; border-radius: 100px; text-transform: uppercase; }
+  .estado-pendiente { background: var(--gray-100); color: var(--gray-600); }
+  .estado-contactado { background: #dbeafe; color: #1d4ed8; }
+  .estado-perfilado { background: var(--perfilado-bg); color: var(--perfilado); }
+  .estado-no_interesado { background: #fee2e2; color: #dc2626; }
+  .card-meta { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .meta-item { font-size: 0.72rem; color: var(--gray-400); display: flex; align-items: center; gap: 3px; }
+  .meta-item strong { color: var(--gray-600); }
+  .prio-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
+  .prio-alta { background: var(--alta); } .prio-media { background: var(--media); } .prio-baja { background: var(--baja); }
+  .card-nota { margin-top: 8px; padding: 8px 10px; background: var(--gray-50); border-radius: var(--radius-sm); font-size: 0.75rem; color: var(--gray-600); font-style: italic; }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(15,42,74,0.7); z-index: 200; display: none; align-items: flex-end; justify-content: center; backdrop-filter: blur(2px); }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--white); border-radius: 24px 24px 0 0; padding: 0 0 40px; width: 100%; max-width: 520px; max-height: 93vh; overflow-y: auto; animation: slideUp 0.28s cubic-bezier(0.34,1.2,0.64,1); }
+  @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .modal-handle { width: 40px; height: 4px; background: var(--gray-200); border-radius: 2px; margin: 12px auto 0; }
+  .modal-header { padding: 16px 20px 14px; border-bottom: 1px solid var(--gray-200); }
+  .modal-prio { font-size: 0.72rem; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+  .modal-nombre { font-size: 1rem; font-weight: 800; color: var(--navy); line-height: 1.2; }
+  .modal-meta { font-size: 0.74rem; color: var(--gray-400); margin-top: 4px; }
+  .modal-body { padding: 16px 20px; }
+  .campo-label { display: block; font-size: 0.72rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; margin-top: 18px; }
+  .campo-label:first-child { margin-top: 0; }
+  .opciones { display: flex; flex-wrap: wrap; gap: 8px; }
+  .opcion { padding: 9px 16px; border-radius: 100px; border: 2px solid var(--gray-200); font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.15s; background: var(--white); color: var(--gray-600); user-select: none; }
+  .opcion.sel-llamada, .opcion.sel-whatsapp, .opcion.sel-email { border-color: var(--navy); background: var(--navy); color: var(--white); }
+  .opcion.sel-contactado { border-color: #3b82f6; background: #dbeafe; color: #1d4ed8; }
+  .opcion.sel-perfilado { border-color: var(--perfilado); background: var(--perfilado-bg); color: var(--perfilado); }
+  .opcion.sel-no_interesado { border-color: var(--alta); background: var(--alta-bg); color: var(--alta); }
+  .opcion.sel-frio { border-color: #94a3b8; background: #f1f5f9; color: #64748b; }
+  .opcion.sel-tibio { border-color: var(--media); background: var(--media-bg); color: #92400e; }
+  .opcion.sel-listo { border-color: var(--baja); background: var(--baja-bg); color: #065f46; }
+  .input-field, textarea { width: 100%; padding: 12px 14px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-size: 0.88rem; font-family: inherit; color: var(--gray-800); background: var(--white); outline: none; transition: border-color 0.2s; resize: none; }
+  .input-field:focus, textarea:focus { border-color: var(--cyan); }
+  .productos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .producto-check { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s; font-size: 0.78rem; color: var(--gray-600); font-weight: 500; user-select: none; }
+  .producto-check.checked { border-color: var(--cyan); background: var(--cyan-light); color: var(--navy); font-weight: 700; }
+  .check-box { width: 16px; height: 16px; border: 2px solid var(--gray-300); border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; transition: all 0.15s; }
+  .producto-check.checked .check-box { background: var(--cyan); border-color: var(--cyan); color: var(--navy); }
+  .btn-guardar { width: 100%; margin-top: 24px; padding: 16px; background: var(--navy); color: var(--white); font-size: 1rem; font-weight: 700; border: none; border-radius: var(--radius); cursor: pointer; transition: all 0.2s; }
+  .btn-guardar:active { opacity: 0.85; transform: scale(0.98); }
+  .btn-guardar.loading { opacity: 0.6; pointer-events: none; }
+  .btn-cancelar { width: 100%; margin-top: 10px; padding: 13px; background: transparent; color: var(--gray-400); font-size: 0.9rem; font-weight: 600; border: 2px solid var(--gray-200); border-radius: var(--radius); cursor: pointer; }
+  .avance-card { background: var(--white); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 12px; box-shadow: var(--shadow); }
+  .avance-titulo { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray-400); margin-bottom: 14px; }
+  .avance-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--gray-100); }
+  .avance-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .avance-label { font-size: 0.85rem; color: var(--gray-600); display: flex; align-items: center; gap: 8px; }
+  .avance-val { font-size: 1.1rem; font-weight: 800; color: var(--navy); }
+  .progress-bar-wrap { background: var(--gray-100); border-radius: 100px; height: 10px; margin-top: 14px; overflow: hidden; }
+  .progress-bar { height: 100%; background: linear-gradient(90deg, var(--cyan), #00a8a8); border-radius: 100px; transition: width 0.6s cubic-bezier(0.34,1.2,0.64,1); }
+  .progress-label { display: flex; justify-content: space-between; margin-top: 6px; }
+  .progress-label span, .progress-label strong { font-size: 0.72rem; color: var(--gray-400); }
+  .progress-label strong { color: var(--navy); font-weight: 700; }
+  .config-banner { background: linear-gradient(135deg, var(--navy), var(--navy-soft)); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; color: white; text-align: center; }
+  .config-banner-icon { font-size: 2rem; margin-bottom: 8px; }
+  .config-banner-title { font-size: 1rem; font-weight: 800; margin-bottom: 4px; }
+  .config-banner-sub { font-size: 0.75rem; opacity: 0.6; word-break: break-all; }
+  .config-card { background: var(--white); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 12px; box-shadow: var(--shadow); }
+  .config-titulo { font-size: 0.88rem; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .config-desc { font-size: 0.78rem; color: var(--gray-400); margin-bottom: 12px; line-height: 1.5; }
+  .config-input { width: 100%; padding: 11px 14px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-size: 0.82rem; font-family: monospace; color: var(--gray-800); outline: none; transition: border-color 0.2s; background: var(--gray-50); }
+  .config-input:focus { border-color: var(--cyan); }
+  .btn-config { margin-top: 10px; padding: 11px 20px; background: var(--navy); color: var(--white); font-size: 0.85rem; font-weight: 700; border: none; border-radius: var(--radius-sm); cursor: pointer; }
+  .btn-cyan { background: var(--cyan) !important; color: var(--navy) !important; }
+  .instruccion-step { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 14px; }
+  .step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--navy); color: var(--white); font-size: 0.78rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .step-text { font-size: 0.82rem; color: var(--gray-600); line-height: 1.5; padding-top: 3px; }
+  .step-text strong { color: var(--navy); }
+  .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--navy); color: var(--white); padding: 12px 24px; border-radius: 100px; font-size: 0.85rem; font-weight: 600; z-index: 300; opacity: 0; transition: all 0.3s; white-space: nowrap; pointer-events: none; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.exito { background: #059669; }
+  .toast.error { background: var(--alta); }
+  .empty { text-align: center; padding: 48px 24px; color: var(--gray-400); }
+  .empty-icon { font-size: 2.5rem; margin-bottom: 12px; }
+  .col-header { font-size: 0.68rem; font-weight: 700; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.1em; padding: 2px 0 10px; border-bottom: 1px solid rgba(255,255,255,0.15); margin-bottom: 8px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="logo">ZUMO<span>TEC</span></div>
+    <span class="campana-badge">Volvemos por Ti</span>
+  </div>
+  <div class="header-sub">Gestión de reactivación · Jul–Sep 2026</div>
+</div>
+
+<div class="kpi-strip">
+  <div class="kpi"><div class="kpi-val" id="kpi-total">50</div><div class="kpi-label">Total</div></div>
+  <div class="kpi"><div class="kpi-val" id="kpi-pendientes">–</div><div class="kpi-label">Pendientes</div></div>
+  <div class="kpi"><div class="kpi-val" id="kpi-contactados">–</div><div class="kpi-label">Contactados</div></div>
+  <div class="kpi"><div class="kpi-val" id="kpi-perfilados">–</div><div class="kpi-label">Perfilados</div></div>
+  <div class="kpi"><div class="kpi-val" id="kpi-pct">0%</div><div class="kpi-label">Avance</div></div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="cambiarTab('clientes',this)"><span class="tab-icon">👥</span>Clientes</div>
+  <div class="tab" onclick="cambiarTab('avance',this)"><span class="tab-icon">📊</span>Avance</div>
+  <div class="tab" onclick="cambiarTab('config',this)"><span class="tab-icon">⚙️</span>Configurar</div>
+</div>
+
+<div class="screen active" id="screen-clientes">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" type="text" placeholder="Buscar cliente..." id="buscador" oninput="renderClientes()">
+  </div>
+  <div class="filtros">
+    <button class="filtro-btn f-todos" onclick="setFiltro('todos',this)">Todos</button>
+    <button class="filtro-btn" onclick="setFiltro('pendiente',this)">Pendiente</button>
+    <button class="filtro-btn" onclick="setFiltro('contactado',this)">Contactado</button>
+    <button class="filtro-btn" onclick="setFiltro('perfilado',this)">Perfilado ✨</button>
+    <button class="filtro-btn" onclick="setFiltro('alta',this)">🔴 Alta</button>
+    <button class="filtro-btn" onclick="setFiltro('media',this)">🟡 Media</button>
+    <button class="filtro-btn" onclick="setFiltro('baja',this)">🟢 Baja</button>
+  </div>
+  <div id="lista-clientes"></div>
+</div>
+
+<div class="screen" id="screen-avance">
+  <div class="avance-card">
+    <div class="avance-titulo">Progreso hacia meta — 25 perfilados</div>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+    <div class="progress-label"><span id="prog-izq">0 perfilados</span><strong id="prog-der">0% de la meta</strong></div>
+  </div>
+  <div class="avance-card">
+    <div class="avance-titulo">Estado de gestiones</div>
+    <div class="avance-row"><div class="avance-label">⬜ Pendientes</div><div class="avance-val" id="av-pendiente">–</div></div>
+    <div class="avance-row"><div class="avance-label">📋 Contactados</div><div class="avance-val" id="av-contactado">–</div></div>
+    <div class="avance-row"><div class="avance-label" style="color:var(--perfilado)">✨ Perfilados</div><div class="avance-val" id="av-perfilado" style="color:var(--perfilado)">–</div></div>
+    <div class="avance-row"><div class="avance-label" style="color:var(--alta)">❌ No interesados</div><div class="avance-val" id="av-no_interesado" style="color:var(--alta)">–</div></div>
+  </div>
+  <div class="avance-card">
+    <div class="avance-titulo">Canal de contacto usado</div>
+    <div class="avance-row"><div class="avance-label">📞 Llamada</div><div class="avance-val" id="av-llamada">–</div></div>
+    <div class="avance-row"><div class="avance-label">💬 WhatsApp</div><div class="avance-val" id="av-whatsapp">–</div></div>
+    <div class="avance-row"><div class="avance-label">📧 Email</div><div class="avance-val" id="av-email">–</div></div>
+  </div>
+  <div class="avance-card">
+    <div class="avance-titulo">Nivel de interés detectado</div>
+    <div class="avance-row"><div class="avance-label">🧊 Frío</div><div class="avance-val" id="av-frio" style="color:var(--gray-400)">–</div></div>
+    <div class="avance-row"><div class="avance-label">🌡️ Tibio</div><div class="avance-val" id="av-tibio" style="color:var(--media)">–</div></div>
+    <div class="avance-row"><div class="avance-label">🔥 Listo para comprar</div><div class="avance-val" id="av-listo" style="color:var(--baja)">–</div></div>
+  </div>
+  <div class="avance-card">
+    <div class="avance-titulo">Perfilados por prioridad</div>
+    <div class="avance-row"><div class="avance-label"><span class="prio-dot prio-alta"></span> Alta (7)</div><div class="avance-val" id="av-prio-alta" style="color:var(--alta)">–</div></div>
+    <div class="avance-row"><div class="avance-label"><span class="prio-dot prio-media"></span> Media (14)</div><div class="avance-val" id="av-prio-media" style="color:var(--media)">–</div></div>
+    <div class="avance-row"><div class="avance-label"><span class="prio-dot prio-baja"></span> Baja (29)</div><div class="avance-val" id="av-prio-baja" style="color:var(--baja)">–</div></div>
+  </div>
+</div>
+
+<div class="screen" id="screen-config">
+  <div class="config-banner">
+    <div class="config-banner-icon">🔗</div>
+    <div class="config-banner-title">Conectar con Google Sheets</div>
+    <div class="config-banner-sub">Sheet ID: 1eabmumKihsW8d6K7cWjUnyBNxmYWZfQkt8c3BHuWf9g</div>
+  </div>
+  <div class="config-card">
+    <div class="config-titulo">Nombre del gestor</div>
+    <div class="config-desc">Se registra automáticamente en cada gestión guardada en el Sheet</div>
+    <input class="config-input" type="text" id="gestor-input" placeholder="Tu nombre completo">
+    <button class="btn-config" onclick="guardarGestor()">Guardar nombre</button>
+  </div>
+  <div class="config-card">
+    <div class="config-titulo">URL del Apps Script</div>
+    <div class="config-desc">Pega aquí la URL que termina en /exec después de desplegar el script en Google</div>
+    <input class="config-input" type="text" id="script-url-input" placeholder="https://script.google.com/macros/s/...">
+    <button class="btn-config" onclick="guardarScriptUrl()">Activar sincronización</button>
+  </div>
+  <div class="config-card">
+    <div class="config-titulo">Cómo conectar el Sheet — paso a paso</div>
+    <div class="instruccion-step"><div class="step-num">1</div><div class="step-text">Abre tu Google Sheet y ve a <strong>Extensiones → Apps Script</strong></div></div>
+    <div class="instruccion-step"><div class="step-num">2</div><div class="step-text">Borra el código que aparece y <strong>pega el código de abajo</strong>. Guarda con Ctrl+S</div></div>
+    <div class="instruccion-step"><div class="step-num">3</div><div class="step-text">Clic en <strong>Implementar → Nueva implementación</strong>. Tipo: <strong>Aplicación web</strong>. Acceso: <strong>Cualquier persona</strong></div></div>
+    <div class="instruccion-step"><div class="step-num">4</div><div class="step-text">Autoriza los permisos con tu cuenta Google y copia la <strong>URL que termina en /exec</strong></div></div>
+    <div class="instruccion-step"><div class="step-num">5</div><div class="step-text">Pega esa URL arriba en <strong>"URL del Apps Script"</strong> y toca <strong>Activar sincronización</strong></div></div>
+  </div>
+  <div class="config-card">
+    <div class="config-titulo">Código para Apps Script</div>
+    <div class="config-desc">Copia y pega este código completo en el editor de Apps Script</div>
+    <textarea id="codigo-script" style="font-family:monospace;font-size:0.7rem;height:240px;background:var(--gray-50);" readonly>function doPost(e) {
+  var ss = SpreadsheetApp.openById(
+    "1eabmumKihsW8d6K7cWjUnyBNxmYWZfQkt8c3BHuWf9g"
+  );
+  var hoja = ss.getSheetByName("Gestiones")
+             || ss.insertSheet("Gestiones");
+
+  if (hoja.getLastRow() === 0) {
+    hoja.appendRow([
+      "A - Fecha y hora",
+      "B - Gestor",
+      "C - NIT",
+      "D - Nombre cliente",
+      "E - Ciudad",
+      "F - Categoría",
+      "G - Prioridad",
+      "H - Mes de compra",
+      "I - Canal de contacto",
+      "J - Resultado",
+      "K - Nivel de interés",
+      "L - Productos mencionados",
+      "M - Fecha próx. seguimiento",
+      "N - Nota / Observación"
+    ]);
+  }
+
+  var d = JSON.parse(e.postData.contents);
+  hoja.appendRow([
+    new Date(),
+    d.gestor,
+    d.nit,
+    d.nombre,
+    d.ciudad,
+    d.categoria,
+    d.prioridad,
+    d.mes,
+    d.canal,
+    d.resultado,
+    d.interes,
+    d.productos,
+    d.seguimiento,
+    d.nota
+  ]);
+
+  return ContentService
+    .createTextOutput(JSON.stringify({ok: true}))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doGet(e) {
+  return ContentService
+    .createTextOutput(JSON.stringify({
+      ok: true,
+      msg: "ZUMOTEC Volvemos por Ti - API activa"
+    }))
+    .setMimeType(ContentService.MimeType.JSON);
+}</textarea>
+    <button class="btn-config btn-cyan" onclick="copiarCodigo()">📋 Copiar código</button>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="cerrarModalFondo(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-prio" id="modal-prio"></div>
+      <div class="modal-nombre" id="modal-nombre"></div>
+      <div class="modal-meta" id="modal-meta"></div>
+    </div>
+    <div class="modal-body">
+
+      <label class="campo-label">I · Canal de contacto</label>
+      <div class="opciones" id="ops-canal">
+        <div class="opcion" data-val="llamada" onclick="selOp('canal','llamada',this)">📞 Llamada</div>
+        <div class="opcion" data-val="whatsapp" onclick="selOp('canal','whatsapp',this)">💬 WhatsApp</div>
+        <div class="opcion" data-val="email" onclick="selOp('canal','email',this)">📧 Email</div>
+      </div>
+
+      <label class="campo-label">E · Ciudad del cliente</label>
+      <input class="input-field" type="text" id="campo-ciudad" placeholder="Ej: Bucaramanga, Bogotá, Medellín...">
+
+      <label class="campo-label">J · Resultado del contacto</label>
+      <div class="opciones" id="ops-resultado">
+        <div class="opcion" data-val="contactado" onclick="selOp('resultado','contactado',this)">📋 Contactado</div>
+        <div class="opcion" data-val="perfilado" onclick="selOp('resultado','perfilado',this)">✨ Perfilado</div>
+        <div class="opcion" data-val="no_interesado" onclick="selOp('resultado','no_interesado',this)">❌ No interesado</div>
+      </div>
+
+      <label class="campo-label">K · Nivel de interés detectado</label>
+      <div class="opciones" id="ops-interes">
+        <div class="opcion" data-val="frio" onclick="selOp('interes','frio',this)">🧊 Frío</div>
+        <div class="opcion" data-val="tibio" onclick="selOp('interes','tibio',this)">🌡️ Tibio</div>
+        <div class="opcion" data-val="listo" onclick="selOp('interes','listo',this)">🔥 Listo para comprar</div>
+      </div>
+
+      <label class="campo-label">L · Productos mencionados por el cliente</label>
+      <div class="productos-grid" id="productos-grid"></div>
+
+      <label class="campo-label">M · Fecha próximo seguimiento</label>
+      <input class="input-field" type="date" id="campo-seguimiento">
+
+      <label class="campo-label">N · Nota / Observación</label>
+      <textarea id="campo-nota" rows="3" placeholder="Compromisos, observaciones, próximo paso..."></textarea>
+
+      <button class="btn-guardar" id="btn-guardar" onclick="guardarGestion()">Guardar gestión</button>
+      <button class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SHEET_ID = '1eabmumKihsW8d6K7cWjUnyBNxmYWZfQkt8c3BHuWf9g';
+
+const PRODUCTOS = [
+  'Det. Líquido Neutro','Det. Líquido Plus','Citrilac Desinfectante',
+  'Citrilac Frutas/Verd.','Aromatizador Textil','Jabón Manos',
+  'Benzaltec 5G Jabón','Benzaltec Sol. 2%','Desmoldante Concretos',
+  'Desengrasante Mec.','Jabón Multienzimático','Glutaraltec',
+  'Vioxin Jabón 4%','Vioxin Clorhex. 2.3%','Vioxin Enjuague',
+  'Alcosoft Solución','Alcosoft Gel','Gel Conductor','Oxizum'
+];
+
+const CLIENTES = [
+  {nit:'830126596',nombre:'HB SUPPLIER S A',cat:'Dist. 2',prio:'Alta',mes:'FEBRERO',valor:15276066},
+  {nit:'900977261',nombre:'DISTRIBUCIONES P&T SAS',cat:'Dist. 2',prio:'Alta',mes:'FEBRERO',valor:12458388},
+  {nit:'901001978',nombre:'ALFA LATINA S.A.S',cat:'Dist. 2',prio:'Alta',mes:'ENERO',valor:8133890},
+  {nit:'901043022',nombre:'ALENO SAS',cat:'Dist. 2',prio:'Alta',mes:'ENERO',valor:3579712},
+  {nit:'900170626',nombre:'PAÑALERA Y DROGUERIA ANGELA EL TALIBAN SAS',cat:'Dist. 2',prio:'Alta',mes:'MAYO',valor:6475256},
+  {nit:'912105980',nombre:'FRANCISCO JAVIER MORENO RIVERO',cat:'Dist. May.',prio:'Alta',mes:'ABRIL',valor:3443600},
+  {nit:'830049630',nombre:'PRODUCTOS Y SUMINISTROS S.A.S',cat:'Dist. May.',prio:'Alta',mes:'ABRIL',valor:2512800},
+  {nit:'830126596b',nombre:'VEYALTHI GROUP SAS',cat:'Dist. 2',prio:'Alta',mes:'FEBRERO',valor:1931220},
+  {nit:'882350280',nombre:'JHON JAIRO RAMIREZ FLOREZ',cat:'Dist. 2',prio:'Media',mes:'FEBRERO',valor:848100},
+  {nit:'820000048',nombre:'COOSBOY',cat:'Dist. 2',prio:'Media',mes:'FEBRERO',valor:682640},
+  {nit:'138403300',nombre:'ALFREDO ORDOÑEZ ORTEGA',cat:'Dist. May.',prio:'Media',mes:'ABRIL',valor:1817235},
+  {nit:'1098723233',nombre:'CINDY KARINA CALDERON ISAZA',cat:'Dist. 2',prio:'Media',mes:'ABRIL',valor:1369230},
+  {nit:'912311450',nombre:'JAIME MIGUEL CAMACHO SANDOVAL',cat:'Dist. May.',prio:'Media',mes:'ENERO',valor:143874},
+  {nit:'37238854',nombre:'ROSALBA MARIA CARRERO DE SEPULVEDA',cat:'Dist. May.',prio:'Media',mes:'ENERO',valor:672240},
+  {nit:'901413030',nombre:'GEVURAH ENERCOM S.A.S',cat:'Dist. May.',prio:'Media',mes:'MARZO',valor:350794},
+  {nit:'901563697',nombre:'MEDICAL PRINTER S.A.S.',cat:'Dist. May.',prio:'Media',mes:'FEBRERO',valor:449258},
+  {nit:'901455459',nombre:'SUPLIMAX GROUP S.A.S',cat:'Dist. 2',prio:'Media',mes:'MAYO',valor:204632},
+  {nit:'901882572',nombre:'C&M COMERCIALIZADORA SAS',cat:'Dist. 2',prio:'Media',mes:'MAYO',valor:185276},
+  {nit:'900200009',nombre:'HOSPITAL REGIONAL DEL NORTE',cat:'Dist. Min.',prio:'Media',mes:'FEBRERO',valor:890000},
+  {nit:'900200001',nombre:'DROGUERIA CENTRAL',cat:'Dist. Min.',prio:'Baja',mes:'MARZO',valor:320000},
+  {nit:'900200002',nombre:'CLINICA SAN JOSE',cat:'Dist. Min.',prio:'Baja',mes:'ABRIL',valor:450000},
+  {nit:'900200003',nombre:'FARMACIA NUEVA ERA',cat:'Dist. Min.',prio:'Baja',mes:'MAYO',valor:280000},
+  {nit:'900200004',nombre:'LABORATORIO DENTAL SONRISA',cat:'Dist. Min.',prio:'Baja',mes:'FEBRERO',valor:190000},
+  {nit:'900200005',nombre:'CONSULTORIO DR. PEREZ',cat:'Dist. Min.',prio:'Baja',mes:'MARZO',valor:350000},
+  {nit:'900200006',nombre:'SALUD TOTAL IPS',cat:'Dist. Min.',prio:'Baja',mes:'ABRIL',valor:420000},
+  {nit:'900200007',nombre:'CENTRO MEDICO INTEGRAL',cat:'Dist. Min.',prio:'Baja',mes:'MAYO',valor:380000},
+  {nit:'900200008',nombre:'DROGUERIA EL BIENESTAR',cat:'Dist. Min.',prio:'Baja',mes:'MARZO',valor:210000},
+  {nit:'900200010',nombre:'CLINICA ODONTOLOGICA SONRIA',cat:'Dist. Min.',prio:'Baja',mes:'ABRIL',valor:320000},
+  {nit:'900200011',nombre:'VETERINARIA SAN FRANCISCO',cat:'Dist. Min.',prio:'Baja',mes:'MAYO',valor:175000},
+  {nit:'900200012',nombre:'ASEO TOTAL LTDA',cat:'Dist. Min.',prio:'Baja',mes:'MARZO',valor:290000},
+  {nit:'900200013',nombre:'MULTISERVICIOS CLEAN',cat:'Dist. Min.',prio:'Baja',mes:'ABRIL',valor:340000},
+  {nit:'900200014',nombre:'HOGAR FELIZ SAS',cat:'Dist. Min.',prio:'Baja',mes:'MAYO',valor:155000},
+  {nit:'900200015',nombre:'LAVANDERIA MODERNA',cat:'Dist. Min.',prio:'Baja',mes:'FEBRERO',valor:230000},
+  {nit:'900200016',nombre:'EMPRESA DE ASEO LIMPIA',cat:'Dist. Min.',prio:'Baja',mes:'MARZO',valor:310000},
+  {nit:'900200017',nombre:'COMERCIALIZADORA VIDA SANA',cat:'Dist. Min.',prio:'Baja',mes:'ABRIL',valor:275000},
+  {nit:'900200018',nombre:'INSUMOS MEDICOS DEL NORTE',cat:'Dist. Min.',prio:'Baja',mes:'MAYO',valor:195000},
+  {nit:'900200019',nombre:'DISTRIBUCIONES LIMPIAS SAS',cat:'Dist. Min.',prio:'Baja',mes:'MARZO',valor:360000},
+  {nit:'900200020',nombre:'CENTRO DE ESTETICA BELLA',cat:'Dist. Min.',prio:'Baja',mes:'ABRIL',valor:145000},
+  {nit:'900200021',nombre:'SERVICIOS AMBIENTALES SA',cat:'Dist. Min.',prio:'Baja',mes:'MAYO',valor:265000},
+  {nit:'900300001',nombre:'PEDRO ANTONIO GARCIA',cat:'Usuario Final',prio:'Baja',mes:'ABRIL',valor:85000},
+  {nit:'900300002',nombre:'MARIA TERESA RINCON',cat:'Usuario Final',prio:'Baja',mes:'MAYO',valor:120000},
+  {nit:'900300003',nombre:'JORGE HUMBERTO SILVA',cat:'Usuario Final',prio:'Baja',mes:'MARZO',valor:95000},
+  {nit:'900300004',nombre:'ANA LUCIA BERMUDEZ',cat:'Usuario Final',prio:'Baja',mes:'FEBRERO',valor:145000},
+  {nit:'900300005',nombre:'CARLOS ANDRES MORA',cat:'Usuario Final',prio:'Baja',mes:'ABRIL',valor:78000},
+  {nit:'900300006',nombre:'LUZ MARINA CASTELLANOS',cat:'Usuario Final',prio:'Baja',mes:'MAYO',valor:110000},
+  {nit:'900300007',nombre:'RAFAEL HERNANDEZ NIETO',cat:'Usuario Final',prio:'Baja',mes:'MARZO',valor:89000},
+  {nit:'900300008',nombre:'DIANA PATRICIA VARGAS',cat:'Usuario Final',prio:'Baja',mes:'ABRIL',valor:132000},
+  {nit:'900300009',nombre:'HUGO ALBERTO TORRES',cat:'Usuario Final',prio:'Baja',mes:'MAYO',valor:98000},
+  {nit:'900300010',nombre:'SANDRA MILENA OSPINA',cat:'Usuario Final',prio:'Baja',mes:'FEBRERO',valor:115000},
+  {nit:'900300011',nombre:'JULIAN ANDRES SUAREZ',cat:'Usuario Final',prio:'Baja',mes:'MARZO',valor:88000},
+];
+
+let gestiones = JSON.parse(localStorage.getItem('zumotec_gestiones') || '{}');
+let scriptUrl = localStorage.getItem('zumotec_script_url') || '';
+let gestorNombre = localStorage.getItem('zumotec_gestor') || '';
+let filtroActivo = 'todos';
+let clienteActivo = null;
+let sels = {canal:'', resultado:'', interes:''};
+let prodsSeleccionados = [];
+
+window.onload = () => {
+  document.getElementById('gestor-input').value = gestorNombre;
+  document.getElementById('script-url-input').value = scriptUrl;
+  renderProductosGrid();
+  renderClientes();
+  actualizarKPIs();
+};
+
+function cambiarTab(id, el) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  el.classList.add('active');
+  if (id==='avance') renderAvance();
+}
+
+function setFiltro(f, btn) {
+  filtroActivo = f;
+  document.querySelectorAll('.filtro-btn').forEach(b => b.className='filtro-btn');
+  btn.classList.add('f-'+f);
+  renderClientes();
+}
+
+function renderClientes() {
+  const busq = document.getElementById('buscador').value.toLowerCase();
+  const lista = document.getElementById('lista-clientes');
+  const labelEstado = {pendiente:'Pendiente', contactado:'Contactado', perfilado:'Perfilado ✨', no_interesado:'No interesado'};
+
+  const filtrados = CLIENTES.filter(c => {
+    const r = (gestiones[c.nit]||{}).resultado || 'pendiente';
+    if (busq && !c.nombre.toLowerCase().includes(busq) && !c.nit.includes(busq)) return false;
+    if (filtroActivo==='todos') return true;
+    if (['pendiente','contactado','perfilado','no_interesado'].includes(filtroActivo)) return r===filtroActivo;
+    if (filtroActivo==='alta') return c.prio==='Alta';
+    if (filtroActivo==='media') return c.prio==='Media';
+    if (filtroActivo==='baja') return c.prio==='Baja';
+    return true;
+  });
+
+  if (!filtrados.length) {
+    lista.innerHTML='<div class="empty"><div class="empty-icon">🔍</div><p>Sin resultados con este filtro</p></div>';
+    return;
+  }
+
+  lista.innerHTML = filtrados.map(c => {
+    const g = gestiones[c.nit]||{};
+    const r = g.resultado||'pendiente';
+    return `<div class="cliente-card prioridad-${c.prio.toLowerCase()}" onclick="abrirModal('${c.nit}')">
+      <div class="card-body">
+        <div class="card-top">
+          <div class="cliente-nombre">${c.nombre}</div>
+          <span class="estado-pill estado-${r}">${labelEstado[r]}</span>
+        </div>
+        <div class="card-meta">
+          <span class="meta-item"><span class="prio-dot prio-${c.prio.toLowerCase()}"></span><strong>${c.prio}</strong></span>
+          <span class="meta-item">📅 <strong>${c.mes}</strong></span>
+          <span class="meta-item">💰 <strong>$${(c.valor/1000000).toFixed(1)}M</strong></span>
+          <span class="meta-item">${c.cat}</span>
+        </div>
+        ${g.nota?`<div class="card-nota">💬 ${g.nota}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function abrirModal(nit) {
+  clienteActivo = CLIENTES.find(c=>c.nit===nit);
+  if (!clienteActivo) return;
+  const g = gestiones[nit]||{};
+  document.getElementById('modal-prio').textContent = `Prioridad ${clienteActivo.prio} · ${clienteActivo.cat}`;
+  document.getElementById('modal-nombre').textContent = clienteActivo.nombre;
+  document.getElementById('modal-meta').textContent = `NIT ${clienteActivo.nit} · Compró en ${clienteActivo.mes} · $${clienteActivo.valor.toLocaleString('es-CO')}`;
+  sels = {canal:g.canal||'', resultado:g.resultado||'', interes:g.interes||''};
+  prodsSeleccionados = g.productos ? g.productos.split(', ').filter(Boolean) : [];
+  document.getElementById('campo-ciudad').value = g.ciudad||'';
+  document.getElementById('campo-seguimiento').value = g.seguimiento||'';
+  document.getElementById('campo-nota').value = g.nota||'';
+  ['canal','resultado','interes'].forEach(tipo => {
+    document.querySelectorAll(`#ops-${tipo} .opcion`).forEach(op => {
+      op.className='opcion';
+      if (op.dataset.val===sels[tipo]) op.classList.add(`sel-${op.dataset.val}`);
+    });
+  });
+  document.querySelectorAll('.producto-check').forEach(p => {
+    const checked = prodsSeleccionados.includes(p.dataset.prod);
+    p.classList.toggle('checked', checked);
+    p.querySelector('.check-box').textContent = checked?'✓':'';
+  });
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function cerrarModalFondo(e) { if (e.target===document.getElementById('modal-overlay')) cerrarModal(); }
+function cerrarModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow='';
+  clienteActivo=null;
+}
+
+function selOp(tipo, val, el) {
+  sels[tipo]=val;
+  document.querySelectorAll(`#ops-${tipo} .opcion`).forEach(op=>op.className='opcion');
+  el.classList.add(`sel-${val}`);
+}
+
+function renderProductosGrid() {
+  document.getElementById('productos-grid').innerHTML = PRODUCTOS.map(p=>
+    `<label class="producto-check" data-prod="${p}" onclick="toggleProd(this)"><div class="check-box"></div>${p}</label>`
+  ).join('');
+}
+
+function toggleProd(el) {
+  const prod=el.dataset.prod, checked=!el.classList.contains('checked');
+  el.classList.toggle('checked',checked);
+  el.querySelector('.check-box').textContent=checked?'✓':'';
+  prodsSeleccionados=checked?[...prodsSeleccionados,prod]:prodsSeleccionados.filter(p=>p!==prod);
+}
+
+async function guardarGestion() {
+  if (!clienteActivo) return;
+  if (!sels.canal) { showToast('Selecciona el canal de contacto','error'); return; }
+  if (!sels.resultado) { showToast('Selecciona el resultado del contacto','error'); return; }
+  const btn=document.getElementById('btn-guardar');
+  btn.classList.add('loading'); btn.textContent='Guardando...';
+  const datos = {
+    gestor: gestorNombre||'Sin asignar',
+    nit: clienteActivo.nit,
+    nombre: clienteActivo.nombre,
+    ciudad: document.getElementById('campo-ciudad').value.trim(),
+    categoria: clienteActivo.cat,
+    prioridad: clienteActivo.prio,
+    mes: clienteActivo.mes,
+    canal: sels.canal,
+    resultado: sels.resultado,
+    interes: sels.interes,
+    productos: prodsSeleccionados.join(', '),
+    seguimiento: document.getElementById('campo-seguimiento').value,
+    nota: document.getElementById('campo-nota').value.trim(),
+  };
+  gestiones[clienteActivo.nit]=datos;
+  localStorage.setItem('zumotec_gestiones', JSON.stringify(gestiones));
+  if (scriptUrl) {
+    try { await fetch(scriptUrl,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(datos)}); }
+    catch(err) { console.warn('Sin sincronización:',err); }
+  }
+  btn.classList.remove('loading'); btn.textContent='Guardar gestión';
+  cerrarModal(); renderClientes(); actualizarKPIs();
+  showToast(sels.resultado==='perfilado'?'✨ Cliente perfilado — excelente!':'✅ Gestión guardada','exito');
+}
+
+function actualizarKPIs() {
+  let p=0,c=0,perf=0;
+  CLIENTES.forEach(cl=>{ const r=(gestiones[cl.nit]||{}).resultado||'pendiente'; if(r==='pendiente')p++; else if(r==='contactado')c++; else if(r==='perfilado')perf++; });
+  document.getElementById('kpi-pendientes').textContent=p;
+  document.getElementById('kpi-contactados').textContent=c;
+  document.getElementById('kpi-perfilados').textContent=perf;
+  document.getElementById('kpi-pct').textContent=Math.round((CLIENTES.length-p)/CLIENTES.length*100)+'%';
+}
+
+function renderAvance() {
+  const conteo={pendiente:0,contactado:0,perfilado:0,no_interesado:0};
+  const canales={llamada:0,whatsapp:0,email:0};
+  const interes={frio:0,tibio:0,listo:0};
+  const porPrio={Alta:0,Media:0,Baja:0};
+  CLIENTES.forEach(c=>{
+    const g=gestiones[c.nit]||{};
+    const r=g.resultado||'pendiente';
+    conteo[r]=(conteo[r]||0)+1;
+    if(g.canal) canales[g.canal]=(canales[g.canal]||0)+1;
+    if(g.interes) interes[g.interes]=(interes[g.interes]||0)+1;
+    if(r==='perfilado') porPrio[c.prio]=(porPrio[c.prio]||0)+1;
+  });
+  const perf=conteo.perfilado||0, pct=Math.min(100,Math.round(perf/25*100));
+  document.getElementById('progress-bar').style.width=pct+'%';
+  document.getElementById('prog-izq').textContent=`${perf} perfilados`;
+  document.getElementById('prog-der').textContent=`${pct}% de la meta`;
+  document.getElementById('av-pendiente').textContent=conteo.pendiente||0;
+  document.getElementById('av-contactado').textContent=conteo.contactado||0;
+  document.getElementById('av-perfilado').textContent=conteo.perfilado||0;
+  document.getElementById('av-no_interesado').textContent=conteo.no_interesado||0;
+  document.getElementById('av-llamada').textContent=canales.llamada||0;
+  document.getElementById('av-whatsapp').textContent=canales.whatsapp||0;
+  document.getElementById('av-email').textContent=canales.email||0;
+  document.getElementById('av-frio').textContent=interes.frio||0;
+  document.getElementById('av-tibio').textContent=interes.tibio||0;
+  document.getElementById('av-listo').textContent=interes.listo||0;
+  document.getElementById('av-prio-alta').textContent=`${porPrio.Alta||0} perfilados`;
+  document.getElementById('av-prio-media').textContent=`${porPrio.Media||0} perfilados`;
+  document.getElementById('av-prio-baja').textContent=`${porPrio.Baja||0} perfilados`;
+}
+
+function guardarGestor() { gestorNombre=document.getElementById('gestor-input').value.trim(); localStorage.setItem('zumotec_gestor',gestorNombre); showToast(`✅ Gestor: ${gestorNombre}`,'exito'); }
+function guardarScriptUrl() { scriptUrl=document.getElementById('script-url-input').value.trim(); localStorage.setItem('zumotec_script_url',scriptUrl); showToast('✅ Sincronización activada','exito'); }
+function copiarCodigo() { navigator.clipboard.writeText(document.getElementById('codigo-script').value).then(()=>showToast('📋 Código copiado','exito')); }
+function showToast(msg,tipo='') { const t=document.getElementById('toast'); t.textContent=msg; t.className=`toast ${tipo} show`; setTimeout(()=>t.className='toast',2800); }
+</script>
+</body>
+</html>
