@@ -121,7 +121,7 @@
   .campo-label { display: block; font-size: 0.7rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 7px; margin-top: 16px; }
   .campo-label:first-child { margin-top: 0; }
   .opciones { display: flex; flex-wrap: wrap; gap: 7px; }
-  .opcion { padding: 8px 14px; border-radius: 100px; border: 2px solid var(--gray-200); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.15s; background: #fff; color: var(--gray-600); user-select: none; }
+  .opcion { padding: 8px 14px; border-radius: 100px; border: 2px solid var(--gray-200); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.15s; background: #fff; color: var(--gray-600); user-select: none; font-family: inherit; outline: none; }
   .opcion.sel-llamada, .opcion.sel-whatsapp, .opcion.sel-email { border-color: var(--navy); background: var(--navy); color: #fff; }
   .opcion.sel-contactado { border-color: #3b82f6; background: #dbeafe; color: #1d4ed8; }
   .opcion.sel-perfilado { border-color: var(--nuevo); background: var(--nuevo-bg); color: var(--nuevo); }
@@ -365,29 +365,29 @@ function doGet(e) {
     <div class="modal-body">
       <label class="campo-label">Reclasificar prioridad</label>
       <div class="opciones" id="ops-prio">
-        <div class="opcion" data-val="Alta" onclick="selOp('prio','Alta',this)">🔴 Alta</div>
-        <div class="opcion" data-val="Media" onclick="selOp('prio','Media',this)">🟡 Media</div>
-        <div class="opcion" data-val="Baja" onclick="selOp('prio','Baja',this)">🟢 Baja</div>
+        <button type="button" class="opcion" data-val="Alta" onclick="event.stopPropagation();selOp('prio','Alta',this)">🔴 Alta</button>
+        <button type="button" class="opcion" data-val="Media" onclick="event.stopPropagation();selOp('prio','Media',this)">🟡 Media</button>
+        <button type="button" class="opcion" data-val="Baja" onclick="event.stopPropagation();selOp('prio','Baja',this)">🟢 Baja</button>
       </div>
       <label class="campo-label">I · Canal de contacto</label>
       <div class="opciones" id="ops-canal">
-        <div class="opcion" data-val="llamada" onclick="selOp('canal','llamada',this)">📞 Llamada</div>
-        <div class="opcion" data-val="whatsapp" onclick="selOp('canal','whatsapp',this)">💬 WhatsApp</div>
-        <div class="opcion" data-val="email" onclick="selOp('canal','email',this)">📧 Email</div>
+        <button type="button" class="opcion" data-val="llamada" onclick="event.stopPropagation();selOp('canal','llamada',this)">📞 Llamada</button>
+        <button type="button" class="opcion" data-val="whatsapp" onclick="event.stopPropagation();selOp('canal','whatsapp',this)">💬 WhatsApp</button>
+        <button type="button" class="opcion" data-val="email" onclick="event.stopPropagation();selOp('canal','email',this)">📧 Email</button>
       </div>
       <label class="campo-label">E · Ciudad del cliente</label>
       <input class="input-field" type="text" id="campo-ciudad" placeholder="Ej: Bucaramanga, Bogotá...">
       <label class="campo-label">J · Resultado del contacto</label>
       <div class="opciones" id="ops-resultado">
-        <div class="opcion" data-val="contactado" onclick="selOp('resultado','contactado',this)">📋 Contactado</div>
-        <div class="opcion" data-val="perfilado" onclick="selOp('resultado','perfilado',this)">✨ Perfilado</div>
-        <div class="opcion" data-val="no_interesado" onclick="selOp('resultado','no_interesado',this)">❌ No interesado</div>
+        <button type="button" class="opcion" data-val="contactado" onclick="event.stopPropagation();selOp('resultado','contactado',this)">📋 Contactado</button>
+        <button type="button" class="opcion" data-val="perfilado" onclick="event.stopPropagation();selOp('resultado','perfilado',this)">✨ Perfilado</button>
+        <button type="button" class="opcion" data-val="no_interesado" onclick="event.stopPropagation();selOp('resultado','no_interesado',this)">❌ No interesado</button>
       </div>
       <label class="campo-label">K · Nivel de interés</label>
       <div class="opciones" id="ops-interes">
-        <div class="opcion" data-val="frio" onclick="selOp('interes','frio',this)">🧊 Frío</div>
-        <div class="opcion" data-val="tibio" onclick="selOp('interes','tibio',this)">🌡️ Tibio</div>
-        <div class="opcion" data-val="listo" onclick="selOp('interes','listo',this)">🔥 Listo</div>
+        <button type="button" class="opcion" data-val="frio" onclick="event.stopPropagation();selOp('interes','frio',this)">🧊 Frío</button>
+        <button type="button" class="opcion" data-val="tibio" onclick="event.stopPropagation();selOp('interes','tibio',this)">🌡️ Tibio</button>
+        <button type="button" class="opcion" data-val="listo" onclick="event.stopPropagation();selOp('interes','listo',this)">🔥 Listo</button>
       </div>
       <label class="campo-label">L · Productos mencionados</label>
       <div class="productos-grid" id="productos-grid"></div>
@@ -420,16 +420,16 @@ function doGet(e) {
       <input class="input-field" type="text" id="nuevo-ciudad" placeholder="Ej: Bucaramanga, Bogotá...">
       <label class="campo-label">Categoría</label>
       <div class="opciones" id="ops-cat-nuevo">
-        <div class="opcion" data-val="Distribuidor 2" onclick="selOpNuevo('cat','Distribuidor 2',this)">Dist. 2</div>
-        <div class="opcion" data-val="Mayorista" onclick="selOpNuevo('cat','Mayorista',this)">Mayorista</div>
-        <div class="opcion" data-val="Minorista" onclick="selOpNuevo('cat','Minorista',this)">Minorista</div>
-        <div class="opcion" data-val="Usuario Final" onclick="selOpNuevo('cat','Usuario Final',this)">Usuario Final</div>
+        <button type="button" class="opcion" data-val="Distribuidor 2" onclick="event.stopPropagation();selOpNuevo('cat','Distribuidor 2',this)">Dist. 2</button>
+        <button type="button" class="opcion" data-val="Mayorista" onclick="event.stopPropagation();selOpNuevo('cat','Mayorista',this)">Mayorista</button>
+        <button type="button" class="opcion" data-val="Minorista" onclick="event.stopPropagation();selOpNuevo('cat','Minorista',this)">Minorista</button>
+        <button type="button" class="opcion" data-val="Usuario Final" onclick="event.stopPropagation();selOpNuevo('cat','Usuario Final',this)">Usuario Final</button>
       </div>
       <label class="campo-label">Prioridad inicial</label>
       <div class="opciones" id="ops-prio-nuevo">
-        <div class="opcion" data-val="Alta" onclick="selOpNuevo('prio','Alta',this)">🔴 Alta</div>
-        <div class="opcion" data-val="Media" onclick="selOpNuevo('prio','Media',this)">🟡 Media</div>
-        <div class="opcion" data-val="Baja" onclick="selOpNuevo('prio','Baja',this)">🟢 Baja</div>
+        <button type="button" class="opcion" data-val="Alta" onclick="event.stopPropagation();selOpNuevo('prio','Alta',this)">🔴 Alta</button>
+        <button type="button" class="opcion" data-val="Media" onclick="event.stopPropagation();selOpNuevo('prio','Media',this)">🟡 Media</button>
+        <button type="button" class="opcion" data-val="Baja" onclick="event.stopPropagation();selOpNuevo('prio','Baja',this)">🟢 Baja</button>
       </div>
       <label class="campo-label">Celular de contacto</label>
       <input class="input-field" type="tel" id="nuevo-cel" placeholder="Ej: 3001234567">
