@@ -557,22 +557,22 @@ function renderClientes() {
     const nuevoTag = c.esNuevo ? '<span class="tag-nuevo">Nuevo</span>' : '';
     const prioClass = c.esNuevo ? 'Nuevo' : prioActual;
     const ref = c.esNuevo ? c.ref || '' : c.mes || '';
-    return \`<div class="cliente-card prio-\${prioClass}" onclick="abrirModal('\${c.nit}',\${c.esNuevo})">
+    return `<div class="cliente-card prio-${prioClass}" onclick="abrirModal('${c.nit}',${c.esNuevo})">
       <div class="card-body">
         <div class="card-top">
-          <div class="cliente-nombre">\${c.nombre}\${nuevoTag}\${segTag}</div>
-          <span class="estado-pill ep-\${r}">\${labelEstado[r]}</span>
+          <div class="cliente-nombre">${c.nombre}${nuevoTag}${segTag}</div>
+          <span class="estado-pill ep-${r}">${labelEstado[r]}</span>
         </div>
         <div class="card-meta">
-          <span class="meta-item"><span class="prio-dot pd-\${prioClass}"></span><strong>\${prioClass}</strong></span>
-          <span class="meta-item">📅 <strong>\${ref}</strong></span>
-          \${c.valor ? \`<span class="meta-item">💰 <strong>$\${(c.valor/1000000).toFixed(1)}M</strong></span>\` : ''}
-          <span class="meta-item">\${c.cat || ''}</span>
-          \${c.ciudad ? \`<span class="meta-item">📍 \${c.ciudad}</span>\` : ''}
+          <span class="meta-item"><span class="prio-dot pd-${prioClass}"></span><strong>${prioClass}</strong></span>
+          <span class="meta-item">📅 <strong>${ref}</strong></span>
+          ${c.valor ? `<span class="meta-item">💰 <strong>$${(c.valor/1000000).toFixed(1)}M</strong></span>` : ''}
+          <span class="meta-item">${c.cat || ''}</span>
+          ${c.ciudad ? `<span class="meta-item">📍 ${c.ciudad}</span>` : ''}
         </div>
-        \${g.nota ? \`<div class="card-nota">💬 \${g.nota}</div>\` : ''}
+        ${g.nota ? `<div class="card-nota">💬 ${g.nota}</div>` : ''}
       </div>
-    </div>\`;
+    </div>`;
   }).join('');
 }
 
