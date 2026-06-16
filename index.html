@@ -134,6 +134,8 @@
   .opcion.sel-Baja { border-color: var(--baja); background: var(--baja-bg); color: #065f46; }
   .input-field, textarea { width: 100%; padding: 11px 13px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-size: 0.86rem; font-family: inherit; color: var(--gray-800); background: #fff; outline: none; transition: border-color 0.2s; resize: none; }
   .input-field:focus, textarea:focus { border-color: var(--cyan); }
+  select.input-field:valid { border-color: var(--cyan); background: var(--cyan-light); color: var(--navy); font-weight: 600; }
+  select.input-field option[value=""] { color: var(--gray-400); }
   .productos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
   .producto-check { display: flex; align-items: center; gap: 7px; padding: 8px 11px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s; font-size: 0.76rem; color: var(--gray-600); font-weight: 500; user-select: none; }
   .producto-check.checked { border-color: var(--cyan); background: var(--cyan-light); color: var(--navy); font-weight: 700; }
@@ -419,18 +421,21 @@ function doGet(e) {
       <label class="campo-label">Ciudad</label>
       <input class="input-field" type="text" id="nuevo-ciudad" placeholder="Ej: Bucaramanga, Bogotá...">
       <label class="campo-label">Categoría</label>
-      <div class="opciones" id="ops-cat-nuevo">
-        <button type="button" class="opcion" data-val="Distribuidor 2" onclick="event.stopPropagation();selOpNuevo('cat','Distribuidor 2',this)">Dist. 2</button>
-        <button type="button" class="opcion" data-val="Mayorista" onclick="event.stopPropagation();selOpNuevo('cat','Mayorista',this)">Mayorista</button>
-        <button type="button" class="opcion" data-val="Minorista" onclick="event.stopPropagation();selOpNuevo('cat','Minorista',this)">Minorista</button>
-        <button type="button" class="opcion" data-val="Usuario Final" onclick="event.stopPropagation();selOpNuevo('cat','Usuario Final',this)">Usuario Final</button>
-      </div>
+      <select class="input-field" id="nuevo-cat" style="cursor:pointer;" required>
+        <option value="">— Selecciona una categoría —</option>
+        <option value="Distribuidor 2">Distribuidor 2</option>
+        <option value="Mayorista">Mayorista</option>
+        <option value="Minorista">Minorista</option>
+        <option value="Usuario Final">Usuario Final</option>
+        <option value="Sin categoría">Sin categoría</option>
+      </select>
       <label class="campo-label">Prioridad inicial</label>
-      <div class="opciones" id="ops-prio-nuevo">
-        <button type="button" class="opcion" data-val="Alta" onclick="event.stopPropagation();selOpNuevo('prio','Alta',this)">🔴 Alta</button>
-        <button type="button" class="opcion" data-val="Media" onclick="event.stopPropagation();selOpNuevo('prio','Media',this)">🟡 Media</button>
-        <button type="button" class="opcion" data-val="Baja" onclick="event.stopPropagation();selOpNuevo('prio','Baja',this)">🟢 Baja</button>
-      </div>
+      <select class="input-field" id="nuevo-prio" style="cursor:pointer;" required>
+        <option value="">— Selecciona prioridad —</option>
+        <option value="Alta">🔴 Alta — cliente de alto valor</option>
+        <option value="Media">🟡 Media — cliente con potencial</option>
+        <option value="Baja">🟢 Baja — cliente a trabajar</option>
+      </select>
       <label class="campo-label">Celular de contacto</label>
       <input class="input-field" type="tel" id="nuevo-cel" placeholder="Ej: 3001234567">
       <label class="campo-label">Referencia (cómo lo encontró)</label>
@@ -692,7 +697,7 @@ async function guardarGestion() {
 // ── NUEVO CLIENTE ──
 function abrirModalNuevo() {
   selsNuevo = {cat:'', prio:''};
-  ['nit','nombre','ciudad','cel','ref'].forEach(id => document.getElementById('nuevo-' + id).value = '');
+  ['nit','nombre','ciudad','cel','ref','cat','prio'].forEach(id => { const el = document.getElementById('nuevo-' + id); if(el) el.value = ''; });
   document.querySelectorAll('#ops-cat-nuevo .opcion, #ops-prio-nuevo .opcion').forEach(op => op.className = 'opcion');
   document.getElementById('modal-nuevo-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -710,13 +715,15 @@ function selOpNuevo(tipo, val, el) {
 function guardarNuevo() {
   const nit = document.getElementById('nuevo-nit').value.trim();
   const nombre = document.getElementById('nuevo-nombre').value.trim();
+  const prio = document.getElementById('nuevo-prio').value;
+  const cat = document.getElementById('nuevo-cat').value;
   if (!nit || !nombre) { showToast('NIT y Nombre son obligatorios', 'error'); return; }
-  if (!selsNuevo.prio) { showToast('Asigna una prioridad', 'error'); return; }
+  if (!prio) { showToast('Selecciona una prioridad', 'error'); return; }
   const nuevo = {
     nit: nit + '_n',
     nombre, esNuevo: true,
-    cat: selsNuevo.cat || 'Sin categoría',
-    prio: selsNuevo.prio,
+    cat: cat || 'Sin categoría',
+    prio: prio,
     ciudad: document.getElementById('nuevo-ciudad').value.trim(),
     cel: document.getElementById('nuevo-cel').value.trim(),
     ref: document.getElementById('nuevo-ref').value.trim() || 'Nuevo',
