@@ -189,8 +189,8 @@
 <!-- ══ SELECTOR CAMPAÑA ══ -->
 <div class="camp-selector" id="camp-selector">
   <div class="camp-logo">ZUMO<span>TEC</span></div>
-  <div class="camp-sub">Herramienta de reactivación comercial</div>
-  <div class="camp-titulo">Selecciona la campaña</div>
+  <div class="camp-sub">Herramienta de reactivación comercial · ZUMOTEC</div>
+  <div class="camp-titulo">Selecciona la campaña para comenzar</div>
   <div class="camp-opciones">
     <div class="camp-btn activa" onclick="selCampana('2026')">
       <div class="camp-btn-tag">Activa · 2026</div>
@@ -211,7 +211,10 @@
 <div class="header">
   <div class="header-top">
     <div class="logo">ZUMO<span>TEC</span></div>
-    <span class="camp-badge" onclick="volverSelector()" id="camp-badge">2026</span>
+    <button onclick="volverSelector()" id="camp-badge" style="background:rgba(0,201,200,0.15);border:1.5px solid rgba(0,201,200,0.5);color:var(--cyan);font-size:0.72rem;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;">
+    <span id="camp-badge-texto">2026</span>
+    <span style="opacity:0.75;font-size:0.68rem;">↩ Cambiar</span>
+  </button>
   </div>
   <div class="header-sub" id="header-sub">Volvemos por Ti · Jul–Sep 2026</div>
 </div>
@@ -352,7 +355,7 @@ function doGet(e) {
 
 <!-- ══ MODAL GESTIÓN ══ -->
 <div class="modal-overlay" id="modal-overlay" onclick="cerrarModalFondo(event)">
-  <div class="modal">
+  <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-handle"></div>
     <div class="modal-header">
       <div class="modal-tag" id="modal-tag"></div>
@@ -400,8 +403,8 @@ function doGet(e) {
 </div>
 
 <!-- ══ MODAL NUEVO CLIENTE ══ -->
-<div class="modal-overlay" id="modal-nuevo-overlay" onclick="cerrarNuevoFondo(event)">
-  <div class="modal">
+<div class="modal-overlay" id="modal-nuevo-overlay" onclick="cerrarNuevoFondo(event)" style="z-index:210;">
+  <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-handle"></div>
     <div class="modal-header">
       <div class="modal-tag" style="color:var(--nuevo)">🟣 NUEVO CLIENTE</div>
@@ -473,8 +476,7 @@ window.onload = () => {
   document.getElementById('script-url-input').value = scriptUrl;
   renderProductosGrid();
   // Si hay campaña guardada, cargarla
-  const campGuardada = localStorage.getItem('zumotec_campana');
-  if (campGuardada) selCampana(campGuardada);
+  // Siempre arrancar en el selector — no cargar campaña guardada automáticamente
 };
 
 function selCampana(camp) {
@@ -485,12 +487,12 @@ function selCampana(camp) {
 
   if (camp === '2026') {
     clientesBase = CLIENTES_2026;
-    document.getElementById('camp-badge').textContent = '2026 ↓';
+    document.getElementById('camp-badge-texto').textContent = 'Camp. 2026';
     document.getElementById('header-sub').textContent = 'Volvemos por Ti · Jul–Sep 2026';
     document.getElementById('av-camp-titulo').textContent = 'Progreso campaña 2026 (meta: 25 perfilados)';
   } else {
     clientesBase = CLIENTES_HIST;
-    document.getElementById('camp-badge').textContent = 'Hist ↓';
+    document.getElementById('camp-badge-texto').textContent = 'Histórica';
     document.getElementById('header-sub').textContent = 'Reactivación Histórica · 2022-2025';
     document.getElementById('av-camp-titulo').textContent = 'Progreso campaña histórica (meta: 46 perfilados)';
   }
@@ -799,7 +801,21 @@ function eliminarCliente() {
 }
 
 function guardarGestor() { gestorNombre = document.getElementById('gestor-input').value.trim(); localStorage.setItem('zumotec_gestor', gestorNombre); showToast('✅ Gestor: ' + gestorNombre, 'exito'); }
-function guardarScriptUrl() { scriptUrl = document.getElementById('script-url-input').value.trim(); localStorage.setItem('zumotec_script_url', scriptUrl); showToast('✅ Sincronización activada', 'exito'); }
+async function guardarScriptUrl() {
+  scriptUrl = document.getElementById('script-url-input').value.trim();
+  if (!scriptUrl) { showToast('Pega la URL del Apps Script', 'error'); return; }
+  if (!scriptUrl.includes('script.google.com')) { showToast('URL inválida — debe ser de Google', 'error'); return; }
+  if (!scriptUrl.endsWith('/exec')) { showToast('La URL debe terminar en /exec', 'error'); return; }
+  localStorage.setItem('zumotec_script_url', scriptUrl);
+  showToast('✅ URL guardada — probando conexión...', 'exito');
+  // Test de conexión
+  try {
+    await fetch(scriptUrl, { method: 'GET', mode: 'no-cors' });
+    showToast('✅ Sincronización activa con Google Sheets', 'exito');
+  } catch(err) {
+    showToast('⚠️ URL guardada pero no se pudo verificar', '');
+  }
+}
 function copiarCodigo() { navigator.clipboard.writeText(document.getElementById('codigo-script').value).then(() => showToast('📋 Código copiado', 'exito')); }
 function showToast(msg, tipo='') { const t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast ' + tipo + ' show'; setTimeout(() => t.className = 'toast', 2800); }
 </script>
