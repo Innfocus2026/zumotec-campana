@@ -185,6 +185,8 @@
   .empty-icon { font-size: 2.2rem; margin-bottom: 10px; }
   .divider-seg { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray-400); padding: 8px 4px 4px; }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -258,6 +260,16 @@
 
 <!-- ══ AVANCE ══ -->
 <div class="screen" id="screen-avance">
+  <!-- Botones exportar -->
+  <div style="display:flex;gap:10px;margin-bottom:12px;">
+    <button onclick="exportarExcel()" style="flex:1;padding:13px;background:#1D6F42;color:white;border:none;border-radius:var(--radius);font-size:0.88rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+      📊 Exportar Excel
+    </button>
+    <button onclick="exportarPDF()" style="flex:1;padding:13px;background:#C0392B;color:white;border:none;border-radius:var(--radius);font-size:0.88rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+      📄 Exportar PDF
+    </button>
+  </div>
+
   <div class="avance-card">
     <div class="avance-titulo" id="av-camp-titulo">Progreso campaña</div>
     <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
@@ -825,6 +837,171 @@ async function guardarScriptUrl() {
 }
 function copiarCodigo() { navigator.clipboard.writeText(document.getElementById('codigo-script').value).then(() => showToast('📋 Código copiado', 'exito')); }
 function showToast(msg, tipo='') { const t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast ' + tipo + ' show'; setTimeout(() => t.className = 'toast', 2800); }
+
+function getDatosExportar() {
+  const todos = todosClientes();
+  const labelEstado = {pendiente:'Pendiente', contactado:'Contactado', perfilado:'Perfilado', no_interesado:'No interesado'};
+  const labelInteres = {frio:'Frío', tibio:'Tibio', listo:'Listo para comprar', '':''};
+  const labelCanal = {llamada:'Llamada', whatsapp:'WhatsApp', email:'Email', '':''};
+  return todos.map(c => {
+    const g = gestiones[c.nit] || {};
+    return {
+      'NIT': String(c.nit).replace('_n',''),
+      'Nombre': c.nombre,
+      'Ciudad': g.ciudad || c.ciudad || '',
+      'Categoría': c.cat || '',
+      'Prioridad': g.prio || c.prio || '',
+      'Segmento/Ref': c.segmento || c.ref || '',
+      'Es Nuevo': c.esNuevo ? 'Sí' : 'No',
+      'Canal': labelCanal[g.canal||''] || '',
+      'Estado': labelEstado[g.resultado||'pendiente'],
+      'Interés': labelInteres[g.interes||''] || '',
+      'Productos': g.productos || '',
+      'Seguimiento': g.seguimiento || '',
+      'Nota': g.nota || '',
+      'Gestor': g.gestor || gestorNombre || '',
+    };
+  });
+}
+
+function exportarExcel() {
+  const datos = getDatosExportar();
+  if (!datos.length) { showToast('No hay datos para exportar', 'error'); return; }
+  const ws = XLSX.utils.json_to_sheet(datos);
+  // Anchos de columna
+  ws['!cols'] = [
+    {wch:14},{wch:35},{wch:16},{wch:16},{wch:10},
+    {wch:18},{wch:8},{wch:12},{wch:14},{wch:18},
+    {wch:30},{wch:14},{wch:35},{wch:20}
+  ];
+  const wb = XLSX.utils.book_new();
+  const campNombre = campana === '2026' ? 'Campaña 2026' : 'Histórica 2022-2025';
+  XLSX.utils.book_append_sheet(wb, ws, 'Gestiones');
+  const fecha = new Date().toLocaleDateString('es-CO').replace(/\//g,'-');
+  XLSX.writeFile(wb, `ZUMOTEC_Reactivacion_${campana}_${fecha}.xlsx`);
+  showToast('✅ Excel descargado', 'exito');
+}
+
+function exportarPDF() {
+  const { jsPDF } = window.jspdf;
+  const datos = getDatosExportar();
+  if (!datos.length) { showToast('No hay datos para exportar', 'error'); return; }
+
+  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+  const fecha = new Date().toLocaleDateString('es-CO');
+  const campNombre = campana === '2026' ? 'Volvemos por Ti 2026' : 'Reactivación Histórica 2022-2025';
+
+  // Header
+  doc.setFillColor(15, 42, 74);
+  doc.rect(0, 0, 297, 22, 'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(14); doc.setFont('helvetica','bold');
+  doc.text('ZUMOTEC — ' + campNombre, 14, 10);
+  doc.setFontSize(9); doc.setFont('helvetica','normal');
+  doc.text('Informe de gestión · ' + fecha + '  ·  Gestor: ' + (gestorNombre || 'Sin asignar'), 14, 17);
+
+  // KPIs
+  const todos = todosClientes();
+  let pend=0, cont=0, perf=0, ni=0, nuevos=0;
+  todos.forEach(c => {
+    const r = (gestiones[c.nit]||{}).resultado || 'pendiente';
+    if(r==='pendiente') pend++;
+    else if(r==='contactado') cont++;
+    else if(r==='perfilado') perf++;
+    else if(r==='no_interesado') ni++;
+    if(c.esNuevo) nuevos++;
+  });
+
+  doc.setFillColor(0, 201, 200);
+  doc.rect(0, 22, 297, 14, 'F');
+  doc.setTextColor(15,42,74);
+  doc.setFontSize(9); doc.setFont('helvetica','bold');
+  const kpis = [
+    ['Total', todos.length], ['Pendientes', pend], ['Contactados', cont],
+    ['Perfilados', perf], ['No interesados', ni], ['Nuevos', nuevos]
+  ];
+  kpis.forEach((k, i) => {
+    const x = 14 + i * 46;
+    doc.text(String(k[1]), x, 29);
+    doc.setFont('helvetica','normal');
+    doc.text(k[0], x, 33);
+    doc.setFont('helvetica','bold');
+  });
+
+  // Tabla
+  const headers = ['NIT','Nombre','Ciudad','Cat.','Prioridad','Canal','Estado','Interés','Nota'];
+  const colW = [22, 55, 22, 18, 18, 16, 18, 20, 70];
+  let y = 42;
+
+  // Header tabla
+  doc.setFillColor(15,42,74);
+  doc.rect(0, y-4, 297, 7, 'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(7.5); doc.setFont('helvetica','bold');
+  let x = 5;
+  headers.forEach((h, i) => { doc.text(h, x, y); x += colW[i]; });
+  y += 5;
+
+  // Filas
+  doc.setFont('helvetica','normal');
+  datos.forEach((row, idx) => {
+    if (y > 190) {
+      doc.addPage();
+      y = 15;
+      doc.setFillColor(15,42,74);
+      doc.rect(0, y-4, 297, 7, 'F');
+      doc.setTextColor(255,255,255);
+      doc.setFontSize(7.5); doc.setFont('helvetica','bold');
+      x = 5;
+      headers.forEach((h, i) => { doc.text(h, x, y); x += colW[i]; });
+      y += 5;
+      doc.setFont('helvetica','normal');
+    }
+
+    // Color alterno y por estado
+    if (row['Estado'] === 'Perfilado') {
+      doc.setFillColor(245,243,255);
+    } else if (row['Es Nuevo'] === 'Sí') {
+      doc.setFillColor(250,248,255);
+    } else if (idx % 2 === 0) {
+      doc.setFillColor(248,250,252);
+    } else {
+      doc.setFillColor(255,255,255);
+    }
+    doc.rect(0, y-3.5, 297, 6, 'F');
+
+    doc.setTextColor(30,41,59);
+    doc.setFontSize(7);
+    x = 5;
+    const vals = [
+      row['NIT'], row['Nombre'], row['Ciudad'], row['Categoría'],
+      row['Prioridad'], row['Canal'], row['Estado'], row['Interés'],
+      row['Nota']
+    ];
+    vals.forEach((v, i) => {
+      const maxW = colW[i] - 2;
+      const txt = String(v || '');
+      const truncated = doc.getTextWidth(txt) > maxW
+        ? txt.substring(0, Math.floor(txt.length * maxW / doc.getTextWidth(txt))) + '...'
+        : txt;
+      doc.text(truncated, x, y); x += colW[i];
+    });
+    y += 6;
+  });
+
+  // Footer
+  doc.setFillColor(15,42,74);
+  doc.rect(0, 198, 297, 12, 'F');
+  doc.setTextColor(0,201,200);
+  doc.setFontSize(7); doc.setFont('helvetica','italic');
+  doc.text('ZUMOTEC — Documento de uso interno — Campaña Volvemos por Ti', 14, 205);
+  doc.setTextColor(255,255,255);
+  doc.text('Generado: ' + new Date().toLocaleString('es-CO'), 230, 205);
+
+  const fechaFile = new Date().toLocaleDateString('es-CO').replace(/\//g,'-');
+  doc.save(`ZUMOTEC_Informe_${campana}_${fechaFile}.pdf`);
+  showToast('✅ PDF descargado', 'exito');
+}
 </script>
 </body>
 </html>
