@@ -394,6 +394,7 @@ function doGet(e) {
       <textarea id="campo-nota" rows="3" placeholder="Compromisos, observaciones, próximo paso..."></textarea>
       <button class="btn-guardar" id="btn-guardar" onclick="guardarGestion()">Guardar gestión</button>
       <button class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-eliminar" id="btn-eliminar" onclick="eliminarCliente()" style="display:none;width:100%;margin-top:8px;padding:12px;background:transparent;color:var(--alta);font-size:0.85rem;font-weight:600;border:2px solid var(--alta);border-radius:var(--radius);cursor:pointer;">🗑 Eliminar este cliente de la campaña</button>
     </div>
   </div>
 </div>
@@ -427,6 +428,8 @@ function doGet(e) {
         <div class="opcion" data-val="Media" onclick="selOpNuevo('prio','Media',this)">🟡 Media</div>
         <div class="opcion" data-val="Baja" onclick="selOpNuevo('prio','Baja',this)">🟢 Baja</div>
       </div>
+      <label class="campo-label">Celular de contacto</label>
+      <input class="input-field" type="tel" id="nuevo-cel" placeholder="Ej: 3001234567">
       <label class="campo-label">Referencia (cómo lo encontró)</label>
       <input class="input-field" type="text" id="nuevo-ref" placeholder="Ej: Referido, llamada fría, feria...">
       <button class="btn-guardar" onclick="guardarNuevo()" style="background:var(--nuevo)">Agregar a la campaña</button>
@@ -608,6 +611,13 @@ function abrirModal(nit, esNuevo) {
     p.classList.toggle('checked', checked);
     p.querySelector('.check-box').textContent = checked ? '✓' : '';
   });
+  // Mostrar botón eliminar solo si es cliente nuevo
+  const btnElim = document.getElementById('btn-eliminar');
+  if (clienteActivo.esNuevo) {
+    btnElim.style.display = 'block';
+  } else {
+    btnElim.style.display = 'none';
+  }
   document.getElementById('modal-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -661,6 +671,7 @@ async function guardarGestion() {
     seguimiento: document.getElementById('campo-seguimiento').value,
     nota: document.getElementById('campo-nota').value.trim(),
     esNuevo: clienteActivo.esNuevo ? 'Sí' : 'No',
+    celular: clienteActivo.cel || '',
     prio: sels.prio,
   };
 
@@ -679,7 +690,7 @@ async function guardarGestion() {
 // ── NUEVO CLIENTE ──
 function abrirModalNuevo() {
   selsNuevo = {cat:'', prio:''};
-  ['nit','nombre','ciudad','ref'].forEach(id => document.getElementById('nuevo-' + id).value = '');
+  ['nit','nombre','ciudad','cel','ref'].forEach(id => document.getElementById('nuevo-' + id).value = '');
   document.querySelectorAll('#ops-cat-nuevo .opcion, #ops-prio-nuevo .opcion').forEach(op => op.className = 'opcion');
   document.getElementById('modal-nuevo-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -705,6 +716,7 @@ function guardarNuevo() {
     cat: selsNuevo.cat || 'Sin categoría',
     prio: selsNuevo.prio,
     ciudad: document.getElementById('nuevo-ciudad').value.trim(),
+    cel: document.getElementById('nuevo-cel').value.trim(),
     ref: document.getElementById('nuevo-ref').value.trim() || 'Nuevo',
     mes: 'Nuevo', valor: 0, segmento: '',
   };
@@ -771,6 +783,19 @@ function renderAvance() {
   document.getElementById('av-prio-media').textContent = (porPrio.Media||0)+' perfilados';
   document.getElementById('av-prio-baja').textContent = (porPrio.Baja||0)+' perfilados';
   document.getElementById('av-prio-nuevo').textContent = (porPrio.Nuevo||0)+' perfilados';
+}
+
+function eliminarCliente() {
+  if (!clienteActivo || !clienteActivo.esNuevo) return;
+  if (!confirm('¿Eliminar este cliente de la campaña?')) return;
+  clientesNuevos = clientesNuevos.filter(c => c.nit !== clienteActivo.nit);
+  localStorage.setItem('zumotec_nuevos_' + campana, JSON.stringify(clientesNuevos));
+  delete gestiones[clienteActivo.nit];
+  localStorage.setItem('zumotec_gestiones_' + campana, JSON.stringify(gestiones));
+  cerrarModal();
+  renderClientes();
+  actualizarKPIs();
+  showToast('🗑 Cliente eliminado de la campaña', '');
 }
 
 function guardarGestor() { gestorNombre = document.getElementById('gestor-input').value.trim(); localStorage.setItem('zumotec_gestor', gestorNombre); showToast('✅ Gestor: ' + gestorNombre, 'exito'); }
