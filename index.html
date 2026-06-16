@@ -8,146 +8,220 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
     --navy: #0F2A4A; --navy-soft: #1a3a5c; --cyan: #00C9C8; --cyan-light: #e0f7f7;
-    --white: #ffffff; --gray-50: #f8fafc; --gray-100: #f1f5f9; --gray-200: #e2e8f0;
+    --white: #fff; --gray-50: #f8fafc; --gray-100: #f1f5f9; --gray-200: #e2e8f0;
     --gray-400: #94a3b8; --gray-600: #475569; --gray-800: #1e293b;
-    --alta: #ef4444; --alta-bg: #fef2f2; --media: #f59e0b; --media-bg: #fffbeb;
-    --baja: #10b981; --baja-bg: #f0fdf4; --perfilado: #8b5cf6; --perfilado-bg: #f5f3ff;
-    --radius: 14px; --radius-sm: 8px; --shadow: 0 2px 12px rgba(15,42,74,0.10);
+    --alta: #ef4444; --alta-bg: #fef2f2;
+    --media: #f59e0b; --media-bg: #fffbeb;
+    --baja: #10b981; --baja-bg: #f0fdf4;
+    --nuevo: #8b5cf6; --nuevo-bg: #f5f3ff;
+    --radius: 14px; --radius-sm: 8px;
+    --shadow: 0 2px 12px rgba(15,42,74,0.10);
   }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--gray-100); color: var(--gray-800); min-height: 100vh; padding-bottom: 80px; }
-  .header { background: var(--navy); padding: 16px 20px 14px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 16px rgba(0,0,0,0.2); }
-  .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-  .logo { color: var(--white); font-size: 1.25rem; font-weight: 800; letter-spacing: -0.03em; }
+
+  /* ── SELECTOR CAMPAÑA ── */
+  .camp-selector { position: fixed; inset: 0; background: var(--navy); z-index: 500; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; }
+  .camp-selector.hidden { display: none; }
+  .camp-logo { color: #fff; font-size: 2.5rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 8px; }
+  .camp-logo span { color: var(--cyan); }
+  .camp-sub { color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-bottom: 48px; }
+  .camp-titulo { color: rgba(255,255,255,0.7); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 20px; }
+  .camp-opciones { display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 340px; }
+  .camp-btn { padding: 20px 24px; border-radius: var(--radius); border: 2px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.06); color: #fff; cursor: pointer; transition: all 0.2s; text-align: left; }
+  .camp-btn:active { transform: scale(0.97); }
+  .camp-btn.activa { border-color: var(--cyan); background: rgba(0,201,200,0.12); }
+  .camp-btn-tag { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cyan); margin-bottom: 6px; }
+  .camp-btn-nombre { font-size: 1.05rem; font-weight: 800; color: #fff; margin-bottom: 4px; }
+  .camp-btn-desc { font-size: 0.78rem; color: rgba(255,255,255,0.5); }
+  .camp-btn-count { display: inline-block; background: var(--cyan); color: var(--navy); font-size: 0.7rem; font-weight: 800; padding: 2px 10px; border-radius: 100px; margin-top: 8px; }
+
+  /* ── HEADER ── */
+  .header { background: var(--navy); padding: 14px 20px 12px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 16px rgba(0,0,0,0.2); }
+  .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+  .logo { color: #fff; font-size: 1.1rem; font-weight: 800; letter-spacing: -0.03em; }
   .logo span { color: var(--cyan); }
-  .campana-badge { background: var(--cyan); color: var(--navy); font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 100px; }
-  .header-sub { color: rgba(255,255,255,0.5); font-size: 0.72rem; }
-  .kpi-strip { background: var(--navy-soft); padding: 10px 20px; display: flex; overflow-x: auto; scrollbar-width: none; }
+  .camp-badge { background: rgba(0,201,200,0.2); border: 1px solid rgba(0,201,200,0.4); color: var(--cyan); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 100px; cursor: pointer; }
+  .header-sub { color: rgba(255,255,255,0.4); font-size: 0.68rem; }
+
+  /* ── KPIs ── */
+  .kpi-strip { background: var(--navy-soft); padding: 8px 20px; display: flex; overflow-x: auto; scrollbar-width: none; }
   .kpi-strip::-webkit-scrollbar { display: none; }
-  .kpi { flex: 0 0 auto; text-align: center; padding: 0 16px; border-right: 1px solid rgba(255,255,255,0.1); min-width: 76px; }
+  .kpi { flex: 0 0 auto; text-align: center; padding: 0 14px; border-right: 1px solid rgba(255,255,255,0.1); min-width: 70px; }
   .kpi:last-child { border-right: none; }
-  .kpi-val { color: var(--cyan); font-size: 1.35rem; font-weight: 800; line-height: 1; }
-  .kpi-label { color: rgba(255,255,255,0.5); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 3px; }
-  .tabs { display: flex; background: var(--white); border-bottom: 2px solid var(--gray-200); position: sticky; top: 80px; z-index: 90; }
-  .tab { flex: 1; text-align: center; padding: 12px 8px; font-size: 0.78rem; font-weight: 600; color: var(--gray-400); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; user-select: none; }
+  .kpi-val { color: var(--cyan); font-size: 1.25rem; font-weight: 800; line-height: 1; }
+  .kpi-label { color: rgba(255,255,255,0.45); font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 3px; }
+
+  /* ── TABS ── */
+  .tabs { display: flex; background: #fff; border-bottom: 2px solid var(--gray-200); position: sticky; top: 72px; z-index: 90; }
+  .tab { flex: 1; text-align: center; padding: 10px 8px; font-size: 0.75rem; font-weight: 600; color: var(--gray-400); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; user-select: none; }
   .tab.active { color: var(--navy); border-bottom-color: var(--cyan); }
-  .tab-icon { display: block; font-size: 1.1rem; margin-bottom: 2px; }
-  .screen { display: none; padding: 16px; }
+  .tab-icon { display: block; font-size: 1rem; margin-bottom: 2px; }
+
+  .screen { display: none; padding: 14px; }
   .screen.active { display: block; }
-  .search-wrap { position: relative; margin-bottom: 14px; }
-  .search-input { width: 100%; padding: 12px 16px 12px 42px; border: 2px solid var(--gray-200); border-radius: var(--radius); font-size: 0.9rem; background: var(--white); color: var(--gray-800); outline: none; transition: border-color 0.2s; }
+
+  /* ── BUSCADOR Y FILTROS ── */
+  .search-wrap { position: relative; margin-bottom: 12px; }
+  .search-input { width: 100%; padding: 11px 16px 11px 40px; border: 2px solid var(--gray-200); border-radius: var(--radius); font-size: 0.88rem; background: #fff; outline: none; transition: border-color 0.2s; }
   .search-input:focus { border-color: var(--cyan); }
-  .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--gray-400); }
-  .filtros { display: flex; gap: 8px; margin-bottom: 14px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--gray-400); font-size: 0.9rem; }
+  .filtros { display: flex; gap: 7px; margin-bottom: 12px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
   .filtros::-webkit-scrollbar { display: none; }
-  .filtro-btn { flex: 0 0 auto; padding: 6px 14px; border-radius: 100px; font-size: 0.75rem; font-weight: 600; border: 2px solid var(--gray-200); background: var(--white); color: var(--gray-600); cursor: pointer; transition: all 0.2s; white-space: nowrap; }
-  .filtro-btn.f-todos { border-color: var(--navy); background: var(--navy); color: var(--white); }
+  .filtro-btn { flex: 0 0 auto; padding: 5px 12px; border-radius: 100px; font-size: 0.72rem; font-weight: 600; border: 2px solid var(--gray-200); background: #fff; color: var(--gray-600); cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+  .filtro-btn.f-todos { border-color: var(--navy); background: var(--navy); color: #fff; }
   .filtro-btn.f-pendiente { border-color: var(--gray-400); background: var(--gray-100); color: var(--gray-600); }
   .filtro-btn.f-contactado { border-color: #3b82f6; background: #dbeafe; color: #1d4ed8; }
-  .filtro-btn.f-perfilado { border-color: var(--perfilado); background: var(--perfilado-bg); color: var(--perfilado); }
+  .filtro-btn.f-perfilado { border-color: var(--nuevo); background: var(--nuevo-bg); color: var(--nuevo); }
   .filtro-btn.f-alta { border-color: var(--alta); background: var(--alta-bg); color: var(--alta); }
   .filtro-btn.f-media { border-color: var(--media); background: var(--media-bg); color: var(--media); }
   .filtro-btn.f-baja { border-color: var(--baja); background: var(--baja-bg); color: var(--baja); }
-  .cliente-card { background: var(--white); border-radius: var(--radius); margin-bottom: 10px; box-shadow: var(--shadow); overflow: hidden; cursor: pointer; transition: transform 0.15s; border-left: 4px solid transparent; }
+  .filtro-btn.f-nuevo { border-color: var(--nuevo); background: var(--nuevo-bg); color: var(--nuevo); }
+
+  /* ── BOTÓN AGREGAR ── */
+  .btn-agregar { width: 100%; padding: 13px; background: var(--nuevo); color: #fff; font-size: 0.9rem; font-weight: 700; border: none; border-radius: var(--radius); cursor: pointer; margin-bottom: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
+  .btn-agregar:active { opacity: 0.85; transform: scale(0.98); }
+
+  /* ── TARJETAS ── */
+  .cliente-card { background: #fff; border-radius: var(--radius); margin-bottom: 9px; box-shadow: var(--shadow); overflow: hidden; cursor: pointer; transition: transform 0.15s; border-left: 4px solid transparent; }
   .cliente-card:active { transform: scale(0.98); }
-  .cliente-card.prioridad-alta { border-left-color: var(--alta); }
-  .cliente-card.prioridad-media { border-left-color: var(--media); }
-  .cliente-card.prioridad-baja { border-left-color: var(--baja); }
-  .card-body { padding: 14px 16px; }
-  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
-  .cliente-nombre { font-size: 0.88rem; font-weight: 700; color: var(--navy); line-height: 1.3; flex: 1; }
-  .estado-pill { flex: 0 0 auto; font-size: 0.65rem; font-weight: 700; padding: 3px 10px; border-radius: 100px; text-transform: uppercase; }
-  .estado-pendiente { background: var(--gray-100); color: var(--gray-600); }
-  .estado-contactado { background: #dbeafe; color: #1d4ed8; }
-  .estado-perfilado { background: var(--perfilado-bg); color: var(--perfilado); }
-  .estado-no_interesado { background: #fee2e2; color: #dc2626; }
-  .card-meta { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-  .meta-item { font-size: 0.72rem; color: var(--gray-400); display: flex; align-items: center; gap: 3px; }
+  .cliente-card.prio-Alta { border-left-color: var(--alta); }
+  .cliente-card.prio-Media { border-left-color: var(--media); }
+  .cliente-card.prio-Baja { border-left-color: var(--baja); }
+  .cliente-card.prio-Nuevo { border-left-color: var(--nuevo); }
+  .card-body { padding: 12px 14px; }
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 5px; }
+  .cliente-nombre { font-size: 0.85rem; font-weight: 700; color: var(--navy); line-height: 1.3; flex: 1; }
+  .estado-pill { flex: 0 0 auto; font-size: 0.62rem; font-weight: 700; padding: 3px 9px; border-radius: 100px; text-transform: uppercase; }
+  .ep-pendiente { background: var(--gray-100); color: var(--gray-600); }
+  .ep-contactado { background: #dbeafe; color: #1d4ed8; }
+  .ep-perfilado { background: var(--nuevo-bg); color: var(--nuevo); }
+  .ep-no_interesado { background: #fee2e2; color: #dc2626; }
+  .card-meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .meta-item { font-size: 0.69rem; color: var(--gray-400); display: flex; align-items: center; gap: 3px; }
   .meta-item strong { color: var(--gray-600); }
-  .prio-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
-  .prio-alta { background: var(--alta); } .prio-media { background: var(--media); } .prio-baja { background: var(--baja); }
-  .card-nota { margin-top: 8px; padding: 8px 10px; background: var(--gray-50); border-radius: var(--radius-sm); font-size: 0.75rem; color: var(--gray-600); font-style: italic; }
-  .modal-overlay { position: fixed; inset: 0; background: rgba(15,42,74,0.7); z-index: 200; display: none; align-items: flex-end; justify-content: center; backdrop-filter: blur(2px); }
+  .prio-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
+  .pd-Alta { background: var(--alta); } .pd-Media { background: var(--media); } .pd-Baja { background: var(--baja); } .pd-Nuevo { background: var(--nuevo); }
+  .card-nota { margin-top: 7px; padding: 7px 9px; background: var(--gray-50); border-radius: var(--radius-sm); font-size: 0.72rem; color: var(--gray-600); font-style: italic; }
+  .tag-nuevo { display: inline-block; background: var(--nuevo); color: #fff; font-size: 0.58rem; font-weight: 800; padding: 2px 7px; border-radius: 100px; margin-left: 6px; vertical-align: middle; text-transform: uppercase; letter-spacing: 0.06em; }
+  .tag-seg { display: inline-block; font-size: 0.6rem; font-weight: 700; padding: 2px 7px; border-radius: 100px; margin-left: 4px; vertical-align: middle; }
+  .seg-dormido { background: #fee2e2; color: #cc0000; }
+  .seg-perdido { background: #fffbeb; color: #92400e; }
+
+  /* ── MODAL ── */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(15,42,74,0.72); z-index: 200; display: none; align-items: flex-end; justify-content: center; backdrop-filter: blur(2px); }
   .modal-overlay.open { display: flex; }
-  .modal { background: var(--white); border-radius: 24px 24px 0 0; padding: 0 0 40px; width: 100%; max-width: 520px; max-height: 93vh; overflow-y: auto; animation: slideUp 0.28s cubic-bezier(0.34,1.2,0.64,1); }
+  .modal { background: #fff; border-radius: 22px 22px 0 0; padding: 0 0 40px; width: 100%; max-width: 520px; max-height: 93vh; overflow-y: auto; animation: slideUp 0.25s cubic-bezier(0.34,1.2,0.64,1); }
   @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-  .modal-handle { width: 40px; height: 4px; background: var(--gray-200); border-radius: 2px; margin: 12px auto 0; }
-  .modal-header { padding: 16px 20px 14px; border-bottom: 1px solid var(--gray-200); }
-  .modal-prio { font-size: 0.72rem; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
-  .modal-nombre { font-size: 1rem; font-weight: 800; color: var(--navy); line-height: 1.2; }
-  .modal-meta { font-size: 0.74rem; color: var(--gray-400); margin-top: 4px; }
-  .modal-body { padding: 16px 20px; }
-  .campo-label { display: block; font-size: 0.72rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; margin-top: 18px; }
+  .modal-handle { width: 36px; height: 4px; background: var(--gray-200); border-radius: 2px; margin: 10px auto 0; }
+  .modal-header { padding: 14px 20px 12px; border-bottom: 1px solid var(--gray-200); }
+  .modal-tag { font-size: 0.68rem; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 3px; }
+  .modal-nombre { font-size: 0.98rem; font-weight: 800; color: var(--navy); line-height: 1.2; }
+  .modal-meta { font-size: 0.72rem; color: var(--gray-400); margin-top: 3px; }
+  .modal-body { padding: 14px 20px; }
+  .campo-label { display: block; font-size: 0.7rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 7px; margin-top: 16px; }
   .campo-label:first-child { margin-top: 0; }
-  .opciones { display: flex; flex-wrap: wrap; gap: 8px; }
-  .opcion { padding: 9px 16px; border-radius: 100px; border: 2px solid var(--gray-200); font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.15s; background: var(--white); color: var(--gray-600); user-select: none; }
-  .opcion.sel-llamada, .opcion.sel-whatsapp, .opcion.sel-email { border-color: var(--navy); background: var(--navy); color: var(--white); }
+  .opciones { display: flex; flex-wrap: wrap; gap: 7px; }
+  .opcion { padding: 8px 14px; border-radius: 100px; border: 2px solid var(--gray-200); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.15s; background: #fff; color: var(--gray-600); user-select: none; }
+  .opcion.sel-llamada, .opcion.sel-whatsapp, .opcion.sel-email { border-color: var(--navy); background: var(--navy); color: #fff; }
   .opcion.sel-contactado { border-color: #3b82f6; background: #dbeafe; color: #1d4ed8; }
-  .opcion.sel-perfilado { border-color: var(--perfilado); background: var(--perfilado-bg); color: var(--perfilado); }
+  .opcion.sel-perfilado { border-color: var(--nuevo); background: var(--nuevo-bg); color: var(--nuevo); }
   .opcion.sel-no_interesado { border-color: var(--alta); background: var(--alta-bg); color: var(--alta); }
   .opcion.sel-frio { border-color: #94a3b8; background: #f1f5f9; color: #64748b; }
   .opcion.sel-tibio { border-color: var(--media); background: var(--media-bg); color: #92400e; }
   .opcion.sel-listo { border-color: var(--baja); background: var(--baja-bg); color: #065f46; }
-  .input-field, textarea { width: 100%; padding: 12px 14px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-size: 0.88rem; font-family: inherit; color: var(--gray-800); background: var(--white); outline: none; transition: border-color 0.2s; resize: none; }
+  .opcion.sel-Alta { border-color: var(--alta); background: var(--alta-bg); color: var(--alta); }
+  .opcion.sel-Media { border-color: var(--media); background: var(--media-bg); color: #92400e; }
+  .opcion.sel-Baja { border-color: var(--baja); background: var(--baja-bg); color: #065f46; }
+  .input-field, textarea { width: 100%; padding: 11px 13px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-size: 0.86rem; font-family: inherit; color: var(--gray-800); background: #fff; outline: none; transition: border-color 0.2s; resize: none; }
   .input-field:focus, textarea:focus { border-color: var(--cyan); }
-  .productos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .producto-check { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s; font-size: 0.78rem; color: var(--gray-600); font-weight: 500; user-select: none; }
+  .productos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+  .producto-check { display: flex; align-items: center; gap: 7px; padding: 8px 11px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s; font-size: 0.76rem; color: var(--gray-600); font-weight: 500; user-select: none; }
   .producto-check.checked { border-color: var(--cyan); background: var(--cyan-light); color: var(--navy); font-weight: 700; }
-  .check-box { width: 16px; height: 16px; border: 2px solid var(--gray-300); border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; transition: all 0.15s; }
+  .check-box { width: 15px; height: 15px; border: 2px solid var(--gray-300); border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; transition: all 0.15s; }
   .producto-check.checked .check-box { background: var(--cyan); border-color: var(--cyan); color: var(--navy); }
-  .btn-guardar { width: 100%; margin-top: 24px; padding: 16px; background: var(--navy); color: var(--white); font-size: 1rem; font-weight: 700; border: none; border-radius: var(--radius); cursor: pointer; transition: all 0.2s; }
+  .btn-guardar { width: 100%; margin-top: 20px; padding: 15px; background: var(--navy); color: #fff; font-size: 0.95rem; font-weight: 700; border: none; border-radius: var(--radius); cursor: pointer; transition: all 0.2s; }
   .btn-guardar:active { opacity: 0.85; transform: scale(0.98); }
   .btn-guardar.loading { opacity: 0.6; pointer-events: none; }
-  .btn-cancelar { width: 100%; margin-top: 10px; padding: 13px; background: transparent; color: var(--gray-400); font-size: 0.9rem; font-weight: 600; border: 2px solid var(--gray-200); border-radius: var(--radius); cursor: pointer; }
-  .avance-card { background: var(--white); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 12px; box-shadow: var(--shadow); }
-  .avance-titulo { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray-400); margin-bottom: 14px; }
-  .avance-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--gray-100); }
+  .btn-cancelar { width: 100%; margin-top: 9px; padding: 12px; background: transparent; color: var(--gray-400); font-size: 0.88rem; font-weight: 600; border: 2px solid var(--gray-200); border-radius: var(--radius); cursor: pointer; }
+
+  /* ── AVANCE ── */
+  .avance-card { background: #fff; border-radius: var(--radius); padding: 16px 18px; margin-bottom: 11px; box-shadow: var(--shadow); }
+  .avance-titulo { font-size: 0.67rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray-400); margin-bottom: 12px; }
+  .avance-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--gray-100); }
   .avance-row:last-child { border-bottom: none; padding-bottom: 0; }
-  .avance-label { font-size: 0.85rem; color: var(--gray-600); display: flex; align-items: center; gap: 8px; }
-  .avance-val { font-size: 1.1rem; font-weight: 800; color: var(--navy); }
-  .progress-bar-wrap { background: var(--gray-100); border-radius: 100px; height: 10px; margin-top: 14px; overflow: hidden; }
+  .avance-label { font-size: 0.83rem; color: var(--gray-600); display: flex; align-items: center; gap: 7px; }
+  .avance-val { font-size: 1.05rem; font-weight: 800; color: var(--navy); }
+  .progress-bar-wrap { background: var(--gray-100); border-radius: 100px; height: 9px; margin-top: 12px; overflow: hidden; }
   .progress-bar { height: 100%; background: linear-gradient(90deg, var(--cyan), #00a8a8); border-radius: 100px; transition: width 0.6s cubic-bezier(0.34,1.2,0.64,1); }
-  .progress-label { display: flex; justify-content: space-between; margin-top: 6px; }
-  .progress-label span, .progress-label strong { font-size: 0.72rem; color: var(--gray-400); }
+  .progress-label { display: flex; justify-content: space-between; margin-top: 5px; }
+  .progress-label span, .progress-label strong { font-size: 0.7rem; color: var(--gray-400); }
   .progress-label strong { color: var(--navy); font-weight: 700; }
-  .config-banner { background: linear-gradient(135deg, var(--navy), var(--navy-soft)); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; color: white; text-align: center; }
-  .config-banner-icon { font-size: 2rem; margin-bottom: 8px; }
-  .config-banner-title { font-size: 1rem; font-weight: 800; margin-bottom: 4px; }
-  .config-banner-sub { font-size: 0.75rem; opacity: 0.6; word-break: break-all; }
-  .config-card { background: var(--white); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 12px; box-shadow: var(--shadow); }
-  .config-titulo { font-size: 0.88rem; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
-  .config-desc { font-size: 0.78rem; color: var(--gray-400); margin-bottom: 12px; line-height: 1.5; }
-  .config-input { width: 100%; padding: 11px 14px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-size: 0.82rem; font-family: monospace; color: var(--gray-800); outline: none; transition: border-color 0.2s; background: var(--gray-50); }
+
+  /* ── CONFIG ── */
+  .config-banner { background: linear-gradient(135deg, var(--navy), var(--navy-soft)); border-radius: var(--radius); padding: 18px; margin-bottom: 14px; color: #fff; text-align: center; }
+  .config-banner-icon { font-size: 1.8rem; margin-bottom: 7px; }
+  .config-banner-title { font-size: 0.95rem; font-weight: 800; margin-bottom: 4px; }
+  .config-banner-sub { font-size: 0.72rem; opacity: 0.55; word-break: break-all; }
+  .config-card { background: #fff; border-radius: var(--radius); padding: 16px 18px; margin-bottom: 11px; box-shadow: var(--shadow); }
+  .config-titulo { font-size: 0.85rem; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .config-desc { font-size: 0.76rem; color: var(--gray-400); margin-bottom: 11px; line-height: 1.5; }
+  .config-input { width: 100%; padding: 10px 13px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-size: 0.8rem; font-family: monospace; color: var(--gray-800); outline: none; transition: border-color 0.2s; background: var(--gray-50); }
   .config-input:focus { border-color: var(--cyan); }
-  .btn-config { margin-top: 10px; padding: 11px 20px; background: var(--navy); color: var(--white); font-size: 0.85rem; font-weight: 700; border: none; border-radius: var(--radius-sm); cursor: pointer; }
+  .btn-config { margin-top: 9px; padding: 10px 18px; background: var(--navy); color: #fff; font-size: 0.82rem; font-weight: 700; border: none; border-radius: var(--radius-sm); cursor: pointer; }
   .btn-cyan { background: var(--cyan) !important; color: var(--navy) !important; }
-  .instruccion-step { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 14px; }
-  .step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--navy); color: var(--white); font-size: 0.78rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .step-text { font-size: 0.82rem; color: var(--gray-600); line-height: 1.5; padding-top: 3px; }
+  .instruccion-step { display: flex; gap: 11px; align-items: flex-start; margin-bottom: 12px; }
+  .step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 0.75rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .step-text { font-size: 0.8rem; color: var(--gray-600); line-height: 1.5; padding-top: 2px; }
   .step-text strong { color: var(--navy); }
-  .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--navy); color: var(--white); padding: 12px 24px; border-radius: 100px; font-size: 0.85rem; font-weight: 600; z-index: 300; opacity: 0; transition: all 0.3s; white-space: nowrap; pointer-events: none; }
+
+  /* ── TOAST ── */
+  .toast { position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--navy); color: #fff; padding: 11px 22px; border-radius: 100px; font-size: 0.82rem; font-weight: 600; z-index: 300; opacity: 0; transition: all 0.3s; white-space: nowrap; pointer-events: none; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   .toast.exito { background: #059669; }
   .toast.error { background: var(--alta); }
-  .empty { text-align: center; padding: 48px 24px; color: var(--gray-400); }
-  .empty-icon { font-size: 2.5rem; margin-bottom: 12px; }
-  .col-header { font-size: 0.68rem; font-weight: 700; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.1em; padding: 2px 0 10px; border-bottom: 1px solid rgba(255,255,255,0.15); margin-bottom: 8px; }
+  .empty { text-align: center; padding: 40px 20px; color: var(--gray-400); }
+  .empty-icon { font-size: 2.2rem; margin-bottom: 10px; }
+  .divider-seg { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray-400); padding: 8px 4px 4px; }
 </style>
 </head>
 <body>
 
+<!-- ══ SELECTOR CAMPAÑA ══ -->
+<div class="camp-selector" id="camp-selector">
+  <div class="camp-logo">ZUMO<span>TEC</span></div>
+  <div class="camp-sub">Herramienta de reactivación comercial</div>
+  <div class="camp-titulo">Selecciona la campaña</div>
+  <div class="camp-opciones">
+    <div class="camp-btn activa" onclick="selCampana('2026')">
+      <div class="camp-btn-tag">Activa · 2026</div>
+      <div class="camp-btn-nombre">Volvemos por Ti 2026</div>
+      <div class="camp-btn-desc">Clientes con una sola compra en 2026</div>
+      <span class="camp-btn-count">50 clientes</span>
+    </div>
+    <div class="camp-btn" onclick="selCampana('hist')">
+      <div class="camp-btn-tag">Histórica · 2022-2025</div>
+      <div class="camp-btn-nombre">Reactivación Histórica</div>
+      <div class="camp-btn-desc">Compraron antes y no aparecen en 2025</div>
+      <span class="camp-btn-count">92 clientes</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ APP PRINCIPAL ══ -->
 <div class="header">
   <div class="header-top">
     <div class="logo">ZUMO<span>TEC</span></div>
-    <span class="campana-badge">Volvemos por Ti</span>
+    <span class="camp-badge" onclick="volverSelector()" id="camp-badge">2026</span>
   </div>
-  <div class="header-sub">Gestión de reactivación · Jul–Sep 2026</div>
+  <div class="header-sub" id="header-sub">Volvemos por Ti · Jul–Sep 2026</div>
 </div>
 
 <div class="kpi-strip">
-  <div class="kpi"><div class="kpi-val" id="kpi-total">50</div><div class="kpi-label">Total</div></div>
+  <div class="kpi"><div class="kpi-val" id="kpi-total">–</div><div class="kpi-label">Total</div></div>
   <div class="kpi"><div class="kpi-val" id="kpi-pendientes">–</div><div class="kpi-label">Pendientes</div></div>
   <div class="kpi"><div class="kpi-val" id="kpi-contactados">–</div><div class="kpi-label">Contactados</div></div>
   <div class="kpi"><div class="kpi-val" id="kpi-perfilados">–</div><div class="kpi-label">Perfilados</div></div>
+  <div class="kpi"><div class="kpi-val" id="kpi-nuevos">0</div><div class="kpi-label">Nuevos</div></div>
   <div class="kpi"><div class="kpi-val" id="kpi-pct">0%</div><div class="kpi-label">Avance</div></div>
 </div>
 
@@ -157,6 +231,7 @@
   <div class="tab" onclick="cambiarTab('config',this)"><span class="tab-icon">⚙️</span>Configurar</div>
 </div>
 
+<!-- ══ CLIENTES ══ -->
 <div class="screen active" id="screen-clientes">
   <div class="search-wrap">
     <span class="search-icon">🔍</span>
@@ -170,179 +245,192 @@
     <button class="filtro-btn" onclick="setFiltro('alta',this)">🔴 Alta</button>
     <button class="filtro-btn" onclick="setFiltro('media',this)">🟡 Media</button>
     <button class="filtro-btn" onclick="setFiltro('baja',this)">🟢 Baja</button>
+    <button class="filtro-btn" onclick="setFiltro('nuevo',this)">🟣 Nuevos</button>
   </div>
+  <button class="btn-agregar" onclick="abrirModalNuevo()">＋ Agregar cliente nuevo</button>
   <div id="lista-clientes"></div>
 </div>
 
+<!-- ══ AVANCE ══ -->
 <div class="screen" id="screen-avance">
   <div class="avance-card">
-    <div class="avance-titulo">Progreso hacia meta — 25 perfilados</div>
+    <div class="avance-titulo" id="av-camp-titulo">Progreso campaña</div>
     <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
-    <div class="progress-label"><span id="prog-izq">0 perfilados</span><strong id="prog-der">0% de la meta</strong></div>
+    <div class="progress-label"><span id="prog-izq">0 perfilados</span><strong id="prog-der">0%</strong></div>
   </div>
   <div class="avance-card">
     <div class="avance-titulo">Estado de gestiones</div>
     <div class="avance-row"><div class="avance-label">⬜ Pendientes</div><div class="avance-val" id="av-pendiente">–</div></div>
     <div class="avance-row"><div class="avance-label">📋 Contactados</div><div class="avance-val" id="av-contactado">–</div></div>
-    <div class="avance-row"><div class="avance-label" style="color:var(--perfilado)">✨ Perfilados</div><div class="avance-val" id="av-perfilado" style="color:var(--perfilado)">–</div></div>
+    <div class="avance-row"><div class="avance-label" style="color:var(--nuevo)">✨ Perfilados</div><div class="avance-val" id="av-perfilado" style="color:var(--nuevo)">–</div></div>
     <div class="avance-row"><div class="avance-label" style="color:var(--alta)">❌ No interesados</div><div class="avance-val" id="av-no_interesado" style="color:var(--alta)">–</div></div>
+    <div class="avance-row"><div class="avance-label" style="color:var(--nuevo)">🟣 Clientes nuevos</div><div class="avance-val" id="av-nuevos" style="color:var(--nuevo)">–</div></div>
   </div>
   <div class="avance-card">
-    <div class="avance-titulo">Canal de contacto usado</div>
+    <div class="avance-titulo">Canal de contacto</div>
     <div class="avance-row"><div class="avance-label">📞 Llamada</div><div class="avance-val" id="av-llamada">–</div></div>
     <div class="avance-row"><div class="avance-label">💬 WhatsApp</div><div class="avance-val" id="av-whatsapp">–</div></div>
     <div class="avance-row"><div class="avance-label">📧 Email</div><div class="avance-val" id="av-email">–</div></div>
   </div>
   <div class="avance-card">
-    <div class="avance-titulo">Nivel de interés detectado</div>
+    <div class="avance-titulo">Nivel de interés</div>
     <div class="avance-row"><div class="avance-label">🧊 Frío</div><div class="avance-val" id="av-frio" style="color:var(--gray-400)">–</div></div>
     <div class="avance-row"><div class="avance-label">🌡️ Tibio</div><div class="avance-val" id="av-tibio" style="color:var(--media)">–</div></div>
     <div class="avance-row"><div class="avance-label">🔥 Listo para comprar</div><div class="avance-val" id="av-listo" style="color:var(--baja)">–</div></div>
   </div>
   <div class="avance-card">
     <div class="avance-titulo">Perfilados por prioridad</div>
-    <div class="avance-row"><div class="avance-label"><span class="prio-dot prio-alta"></span> Alta (7)</div><div class="avance-val" id="av-prio-alta" style="color:var(--alta)">–</div></div>
-    <div class="avance-row"><div class="avance-label"><span class="prio-dot prio-media"></span> Media (14)</div><div class="avance-val" id="av-prio-media" style="color:var(--media)">–</div></div>
-    <div class="avance-row"><div class="avance-label"><span class="prio-dot prio-baja"></span> Baja (29)</div><div class="avance-val" id="av-prio-baja" style="color:var(--baja)">–</div></div>
+    <div class="avance-row"><div class="avance-label"><span class="prio-dot pd-Alta"></span> Alta</div><div class="avance-val" id="av-prio-alta" style="color:var(--alta)">–</div></div>
+    <div class="avance-row"><div class="avance-label"><span class="prio-dot pd-Media"></span> Media</div><div class="avance-val" id="av-prio-media" style="color:var(--media)">–</div></div>
+    <div class="avance-row"><div class="avance-label"><span class="prio-dot pd-Baja"></span> Baja</div><div class="avance-val" id="av-prio-baja" style="color:var(--baja)">–</div></div>
+    <div class="avance-row"><div class="avance-label"><span class="prio-dot pd-Nuevo"></span> Nuevos</div><div class="avance-val" id="av-prio-nuevo" style="color:var(--nuevo)">–</div></div>
   </div>
 </div>
 
+<!-- ══ CONFIG ══ -->
 <div class="screen" id="screen-config">
   <div class="config-banner">
     <div class="config-banner-icon">🔗</div>
-    <div class="config-banner-title">Conectar con Google Sheets</div>
-    <div class="config-banner-sub">Sheet ID: 1eabmumKihsW8d6K7cWjUnyBNxmYWZfQkt8c3BHuWf9g</div>
+    <div class="config-banner-title">Conectado a Google Sheets</div>
+    <div class="config-banner-sub">ID: 1eabmumKihsW8d6K7cWjUnyBNxmYWZfQkt8c3BHuWf9g</div>
   </div>
   <div class="config-card">
     <div class="config-titulo">Nombre del gestor</div>
-    <div class="config-desc">Se registra automáticamente en cada gestión guardada en el Sheet</div>
+    <div class="config-desc">Se registra automáticamente en cada gestión</div>
     <input class="config-input" type="text" id="gestor-input" placeholder="Tu nombre completo">
     <button class="btn-config" onclick="guardarGestor()">Guardar nombre</button>
   </div>
   <div class="config-card">
     <div class="config-titulo">URL del Apps Script</div>
-    <div class="config-desc">Pega aquí la URL que termina en /exec después de desplegar el script en Google</div>
+    <div class="config-desc">Pega la URL generada al desplegar el script en Google Apps Script</div>
     <input class="config-input" type="text" id="script-url-input" placeholder="https://script.google.com/macros/s/...">
     <button class="btn-config" onclick="guardarScriptUrl()">Activar sincronización</button>
   </div>
   <div class="config-card">
-    <div class="config-titulo">Cómo conectar el Sheet — paso a paso</div>
+    <div class="config-titulo">Cómo conectar el Sheet</div>
     <div class="instruccion-step"><div class="step-num">1</div><div class="step-text">Abre tu Google Sheet y ve a <strong>Extensiones → Apps Script</strong></div></div>
-    <div class="instruccion-step"><div class="step-num">2</div><div class="step-text">Borra el código que aparece y <strong>pega el código de abajo</strong>. Guarda con Ctrl+S</div></div>
-    <div class="instruccion-step"><div class="step-num">3</div><div class="step-text">Clic en <strong>Implementar → Nueva implementación</strong>. Tipo: <strong>Aplicación web</strong>. Acceso: <strong>Cualquier persona</strong></div></div>
-    <div class="instruccion-step"><div class="step-num">4</div><div class="step-text">Autoriza los permisos con tu cuenta Google y copia la <strong>URL que termina en /exec</strong></div></div>
-    <div class="instruccion-step"><div class="step-num">5</div><div class="step-text">Pega esa URL arriba en <strong>"URL del Apps Script"</strong> y toca <strong>Activar sincronización</strong></div></div>
+    <div class="instruccion-step"><div class="step-num">2</div><div class="step-text">Borra el código existente y <strong>pega el código de abajo</strong>. Guarda con Ctrl+S</div></div>
+    <div class="instruccion-step"><div class="step-num">3</div><div class="step-text">Clic en <strong>Implementar → Nueva implementación</strong>. Tipo: Aplicación web. Acceso: Cualquier persona</div></div>
+    <div class="instruccion-step"><div class="step-num">4</div><div class="step-text">Autoriza y copia la <strong>URL que termina en /exec</strong></div></div>
+    <div class="instruccion-step"><div class="step-num">5</div><div class="step-text">Pega esa URL arriba y toca <strong>Activar sincronización</strong></div></div>
   </div>
   <div class="config-card">
-    <div class="config-titulo">Código para Apps Script</div>
-    <div class="config-desc">Copia y pega este código completo en el editor de Apps Script</div>
-    <textarea id="codigo-script" style="font-family:monospace;font-size:0.7rem;height:240px;background:var(--gray-50);" readonly>function doPost(e) {
+    <div class="config-titulo">Código Apps Script</div>
+    <div class="config-desc">Copia y pega en el editor de Apps Script</div>
+    <textarea id="codigo-script" style="font-family:monospace;font-size:0.68rem;height:220px;background:var(--gray-50);" readonly>function doPost(e) {
   var ss = SpreadsheetApp.openById(
     "1eabmumKihsW8d6K7cWjUnyBNxmYWZfQkt8c3BHuWf9g"
   );
-  var hoja = ss.getSheetByName("Gestiones")
-             || ss.insertSheet("Gestiones");
-
+  var d = JSON.parse(e.postData.contents);
+  var nombreHoja = "Gestiones_" + (d.campana || "2026");
+  var hoja = ss.getSheetByName(nombreHoja) || ss.insertSheet(nombreHoja);
   if (hoja.getLastRow() === 0) {
     hoja.appendRow([
-      "A - Fecha y hora",
-      "B - Gestor",
-      "C - NIT",
-      "D - Nombre cliente",
-      "E - Ciudad",
-      "F - Categoría",
-      "G - Prioridad",
-      "H - Mes de compra",
-      "I - Canal de contacto",
-      "J - Resultado",
-      "K - Nivel de interés",
-      "L - Productos mencionados",
-      "M - Fecha próx. seguimiento",
-      "N - Nota / Observación"
+      "A-Fecha","B-Gestor","C-NIT","D-Nombre",
+      "E-Ciudad","F-Categoria","G-Prioridad","H-Referencia",
+      "I-Canal","J-Resultado","K-Interes","L-Productos",
+      "M-Seguimiento","N-Nota","O-Es Nuevo"
     ]);
   }
-
-  var d = JSON.parse(e.postData.contents);
   hoja.appendRow([
-    new Date(),
-    d.gestor,
-    d.nit,
-    d.nombre,
-    d.ciudad,
-    d.categoria,
-    d.prioridad,
-    d.mes,
-    d.canal,
-    d.resultado,
-    d.interes,
-    d.productos,
-    d.seguimiento,
-    d.nota
+    new Date(), d.gestor, d.nit, d.nombre, d.ciudad,
+    d.categoria, d.prioridad, d.mes, d.canal, d.resultado,
+    d.interes, d.productos, d.seguimiento, d.nota, d.esNuevo
   ]);
-
   return ContentService
-    .createTextOutput(JSON.stringify({ok: true}))
+    .createTextOutput(JSON.stringify({ok:true}))
     .setMimeType(ContentService.MimeType.JSON);
 }
-
 function doGet(e) {
   return ContentService
-    .createTextOutput(JSON.stringify({
-      ok: true,
-      msg: "ZUMOTEC Volvemos por Ti - API activa"
-    }))
+    .createTextOutput(JSON.stringify({ok:true,msg:"ZUMOTEC API activa"}))
     .setMimeType(ContentService.MimeType.JSON);
 }</textarea>
     <button class="btn-config btn-cyan" onclick="copiarCodigo()">📋 Copiar código</button>
   </div>
 </div>
 
-<!-- MODAL -->
+<!-- ══ MODAL GESTIÓN ══ -->
 <div class="modal-overlay" id="modal-overlay" onclick="cerrarModalFondo(event)">
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-header">
-      <div class="modal-prio" id="modal-prio"></div>
+      <div class="modal-tag" id="modal-tag"></div>
       <div class="modal-nombre" id="modal-nombre"></div>
       <div class="modal-meta" id="modal-meta"></div>
     </div>
     <div class="modal-body">
-
+      <label class="campo-label">Reclasificar prioridad</label>
+      <div class="opciones" id="ops-prio">
+        <div class="opcion" data-val="Alta" onclick="selOp('prio','Alta',this)">🔴 Alta</div>
+        <div class="opcion" data-val="Media" onclick="selOp('prio','Media',this)">🟡 Media</div>
+        <div class="opcion" data-val="Baja" onclick="selOp('prio','Baja',this)">🟢 Baja</div>
+      </div>
       <label class="campo-label">I · Canal de contacto</label>
       <div class="opciones" id="ops-canal">
         <div class="opcion" data-val="llamada" onclick="selOp('canal','llamada',this)">📞 Llamada</div>
         <div class="opcion" data-val="whatsapp" onclick="selOp('canal','whatsapp',this)">💬 WhatsApp</div>
         <div class="opcion" data-val="email" onclick="selOp('canal','email',this)">📧 Email</div>
       </div>
-
       <label class="campo-label">E · Ciudad del cliente</label>
-      <input class="input-field" type="text" id="campo-ciudad" placeholder="Ej: Bucaramanga, Bogotá, Medellín...">
-
+      <input class="input-field" type="text" id="campo-ciudad" placeholder="Ej: Bucaramanga, Bogotá...">
       <label class="campo-label">J · Resultado del contacto</label>
       <div class="opciones" id="ops-resultado">
         <div class="opcion" data-val="contactado" onclick="selOp('resultado','contactado',this)">📋 Contactado</div>
         <div class="opcion" data-val="perfilado" onclick="selOp('resultado','perfilado',this)">✨ Perfilado</div>
         <div class="opcion" data-val="no_interesado" onclick="selOp('resultado','no_interesado',this)">❌ No interesado</div>
       </div>
-
-      <label class="campo-label">K · Nivel de interés detectado</label>
+      <label class="campo-label">K · Nivel de interés</label>
       <div class="opciones" id="ops-interes">
         <div class="opcion" data-val="frio" onclick="selOp('interes','frio',this)">🧊 Frío</div>
         <div class="opcion" data-val="tibio" onclick="selOp('interes','tibio',this)">🌡️ Tibio</div>
-        <div class="opcion" data-val="listo" onclick="selOp('interes','listo',this)">🔥 Listo para comprar</div>
+        <div class="opcion" data-val="listo" onclick="selOp('interes','listo',this)">🔥 Listo</div>
       </div>
-
-      <label class="campo-label">L · Productos mencionados por el cliente</label>
+      <label class="campo-label">L · Productos mencionados</label>
       <div class="productos-grid" id="productos-grid"></div>
-
       <label class="campo-label">M · Fecha próximo seguimiento</label>
       <input class="input-field" type="date" id="campo-seguimiento">
-
       <label class="campo-label">N · Nota / Observación</label>
       <textarea id="campo-nota" rows="3" placeholder="Compromisos, observaciones, próximo paso..."></textarea>
-
       <button class="btn-guardar" id="btn-guardar" onclick="guardarGestion()">Guardar gestión</button>
       <button class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL NUEVO CLIENTE ══ -->
+<div class="modal-overlay" id="modal-nuevo-overlay" onclick="cerrarNuevoFondo(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-tag" style="color:var(--nuevo)">🟣 NUEVO CLIENTE</div>
+      <div class="modal-nombre">Agregar cliente a la campaña</div>
+      <div class="modal-meta">Este cliente quedará marcado como Nuevo en la lista</div>
+    </div>
+    <div class="modal-body">
+      <label class="campo-label">NIT / Cédula</label>
+      <input class="input-field" type="text" id="nuevo-nit" placeholder="Número de identificación">
+      <label class="campo-label">Nombre del cliente</label>
+      <input class="input-field" type="text" id="nuevo-nombre" placeholder="Nombre completo o razón social">
+      <label class="campo-label">Ciudad</label>
+      <input class="input-field" type="text" id="nuevo-ciudad" placeholder="Ej: Bucaramanga, Bogotá...">
+      <label class="campo-label">Categoría</label>
+      <div class="opciones" id="ops-cat-nuevo">
+        <div class="opcion" data-val="Distribuidor 2" onclick="selOpNuevo('cat','Distribuidor 2',this)">Dist. 2</div>
+        <div class="opcion" data-val="Mayorista" onclick="selOpNuevo('cat','Mayorista',this)">Mayorista</div>
+        <div class="opcion" data-val="Minorista" onclick="selOpNuevo('cat','Minorista',this)">Minorista</div>
+        <div class="opcion" data-val="Usuario Final" onclick="selOpNuevo('cat','Usuario Final',this)">Usuario Final</div>
+      </div>
+      <label class="campo-label">Prioridad inicial</label>
+      <div class="opciones" id="ops-prio-nuevo">
+        <div class="opcion" data-val="Alta" onclick="selOpNuevo('prio','Alta',this)">🔴 Alta</div>
+        <div class="opcion" data-val="Media" onclick="selOpNuevo('prio','Media',this)">🟡 Media</div>
+        <div class="opcion" data-val="Baja" onclick="selOpNuevo('prio','Baja',this)">🟢 Baja</div>
+      </div>
+      <label class="campo-label">Referencia (cómo lo encontró)</label>
+      <input class="input-field" type="text" id="nuevo-ref" placeholder="Ej: Referido, llamada fría, feria...">
+      <button class="btn-guardar" onclick="guardarNuevo()" style="background:var(--nuevo)">Agregar a la campaña</button>
+      <button class="btn-cancelar" onclick="cerrarNuevo()">Cancelar</button>
     </div>
   </div>
 </div>
@@ -361,262 +449,334 @@ const PRODUCTOS = [
   'Alcosoft Solución','Alcosoft Gel','Gel Conductor','Oxizum'
 ];
 
-const CLIENTES = [
-  {nit:'830126596',nombre:'HB SUPPLIER S A',cat:'Dist. 2',prio:'Alta',mes:'FEBRERO',valor:15276066},
-  {nit:'900977261',nombre:'DISTRIBUCIONES P&T SAS',cat:'Dist. 2',prio:'Alta',mes:'FEBRERO',valor:12458388},
-  {nit:'901001978',nombre:'ALFA LATINA S.A.S',cat:'Dist. 2',prio:'Alta',mes:'ENERO',valor:8133890},
-  {nit:'901043022',nombre:'ALENO SAS',cat:'Dist. 2',prio:'Alta',mes:'ENERO',valor:3579712},
-  {nit:'900170626',nombre:'PAÑALERA Y DROGUERIA ANGELA EL TALIBAN SAS',cat:'Dist. 2',prio:'Alta',mes:'MAYO',valor:6475256},
-  {nit:'912105980',nombre:'FRANCISCO JAVIER MORENO RIVERO',cat:'Dist. May.',prio:'Alta',mes:'ABRIL',valor:3443600},
-  {nit:'830049630',nombre:'PRODUCTOS Y SUMINISTROS S.A.S',cat:'Dist. May.',prio:'Alta',mes:'ABRIL',valor:2512800},
-  {nit:'830126596b',nombre:'VEYALTHI GROUP SAS',cat:'Dist. 2',prio:'Alta',mes:'FEBRERO',valor:1931220},
-  {nit:'882350280',nombre:'JHON JAIRO RAMIREZ FLOREZ',cat:'Dist. 2',prio:'Media',mes:'FEBRERO',valor:848100},
-  {nit:'820000048',nombre:'COOSBOY',cat:'Dist. 2',prio:'Media',mes:'FEBRERO',valor:682640},
-  {nit:'138403300',nombre:'ALFREDO ORDOÑEZ ORTEGA',cat:'Dist. May.',prio:'Media',mes:'ABRIL',valor:1817235},
-  {nit:'1098723233',nombre:'CINDY KARINA CALDERON ISAZA',cat:'Dist. 2',prio:'Media',mes:'ABRIL',valor:1369230},
-  {nit:'912311450',nombre:'JAIME MIGUEL CAMACHO SANDOVAL',cat:'Dist. May.',prio:'Media',mes:'ENERO',valor:143874},
-  {nit:'37238854',nombre:'ROSALBA MARIA CARRERO DE SEPULVEDA',cat:'Dist. May.',prio:'Media',mes:'ENERO',valor:672240},
-  {nit:'901413030',nombre:'GEVURAH ENERCOM S.A.S',cat:'Dist. May.',prio:'Media',mes:'MARZO',valor:350794},
-  {nit:'901563697',nombre:'MEDICAL PRINTER S.A.S.',cat:'Dist. May.',prio:'Media',mes:'FEBRERO',valor:449258},
-  {nit:'901455459',nombre:'SUPLIMAX GROUP S.A.S',cat:'Dist. 2',prio:'Media',mes:'MAYO',valor:204632},
-  {nit:'901882572',nombre:'C&M COMERCIALIZADORA SAS',cat:'Dist. 2',prio:'Media',mes:'MAYO',valor:185276},
-  {nit:'900200009',nombre:'HOSPITAL REGIONAL DEL NORTE',cat:'Dist. Min.',prio:'Media',mes:'FEBRERO',valor:890000},
-  {nit:'900200001',nombre:'DROGUERIA CENTRAL',cat:'Dist. Min.',prio:'Baja',mes:'MARZO',valor:320000},
-  {nit:'900200002',nombre:'CLINICA SAN JOSE',cat:'Dist. Min.',prio:'Baja',mes:'ABRIL',valor:450000},
-  {nit:'900200003',nombre:'FARMACIA NUEVA ERA',cat:'Dist. Min.',prio:'Baja',mes:'MAYO',valor:280000},
-  {nit:'900200004',nombre:'LABORATORIO DENTAL SONRISA',cat:'Dist. Min.',prio:'Baja',mes:'FEBRERO',valor:190000},
-  {nit:'900200005',nombre:'CONSULTORIO DR. PEREZ',cat:'Dist. Min.',prio:'Baja',mes:'MARZO',valor:350000},
-  {nit:'900200006',nombre:'SALUD TOTAL IPS',cat:'Dist. Min.',prio:'Baja',mes:'ABRIL',valor:420000},
-  {nit:'900200007',nombre:'CENTRO MEDICO INTEGRAL',cat:'Dist. Min.',prio:'Baja',mes:'MAYO',valor:380000},
-  {nit:'900200008',nombre:'DROGUERIA EL BIENESTAR',cat:'Dist. Min.',prio:'Baja',mes:'MARZO',valor:210000},
-  {nit:'900200010',nombre:'CLINICA ODONTOLOGICA SONRIA',cat:'Dist. Min.',prio:'Baja',mes:'ABRIL',valor:320000},
-  {nit:'900200011',nombre:'VETERINARIA SAN FRANCISCO',cat:'Dist. Min.',prio:'Baja',mes:'MAYO',valor:175000},
-  {nit:'900200012',nombre:'ASEO TOTAL LTDA',cat:'Dist. Min.',prio:'Baja',mes:'MARZO',valor:290000},
-  {nit:'900200013',nombre:'MULTISERVICIOS CLEAN',cat:'Dist. Min.',prio:'Baja',mes:'ABRIL',valor:340000},
-  {nit:'900200014',nombre:'HOGAR FELIZ SAS',cat:'Dist. Min.',prio:'Baja',mes:'MAYO',valor:155000},
-  {nit:'900200015',nombre:'LAVANDERIA MODERNA',cat:'Dist. Min.',prio:'Baja',mes:'FEBRERO',valor:230000},
-  {nit:'900200016',nombre:'EMPRESA DE ASEO LIMPIA',cat:'Dist. Min.',prio:'Baja',mes:'MARZO',valor:310000},
-  {nit:'900200017',nombre:'COMERCIALIZADORA VIDA SANA',cat:'Dist. Min.',prio:'Baja',mes:'ABRIL',valor:275000},
-  {nit:'900200018',nombre:'INSUMOS MEDICOS DEL NORTE',cat:'Dist. Min.',prio:'Baja',mes:'MAYO',valor:195000},
-  {nit:'900200019',nombre:'DISTRIBUCIONES LIMPIAS SAS',cat:'Dist. Min.',prio:'Baja',mes:'MARZO',valor:360000},
-  {nit:'900200020',nombre:'CENTRO DE ESTETICA BELLA',cat:'Dist. Min.',prio:'Baja',mes:'ABRIL',valor:145000},
-  {nit:'900200021',nombre:'SERVICIOS AMBIENTALES SA',cat:'Dist. Min.',prio:'Baja',mes:'MAYO',valor:265000},
-  {nit:'900300001',nombre:'PEDRO ANTONIO GARCIA',cat:'Usuario Final',prio:'Baja',mes:'ABRIL',valor:85000},
-  {nit:'900300002',nombre:'MARIA TERESA RINCON',cat:'Usuario Final',prio:'Baja',mes:'MAYO',valor:120000},
-  {nit:'900300003',nombre:'JORGE HUMBERTO SILVA',cat:'Usuario Final',prio:'Baja',mes:'MARZO',valor:95000},
-  {nit:'900300004',nombre:'ANA LUCIA BERMUDEZ',cat:'Usuario Final',prio:'Baja',mes:'FEBRERO',valor:145000},
-  {nit:'900300005',nombre:'CARLOS ANDRES MORA',cat:'Usuario Final',prio:'Baja',mes:'ABRIL',valor:78000},
-  {nit:'900300006',nombre:'LUZ MARINA CASTELLANOS',cat:'Usuario Final',prio:'Baja',mes:'MAYO',valor:110000},
-  {nit:'900300007',nombre:'RAFAEL HERNANDEZ NIETO',cat:'Usuario Final',prio:'Baja',mes:'MARZO',valor:89000},
-  {nit:'900300008',nombre:'DIANA PATRICIA VARGAS',cat:'Usuario Final',prio:'Baja',mes:'ABRIL',valor:132000},
-  {nit:'900300009',nombre:'HUGO ALBERTO TORRES',cat:'Usuario Final',prio:'Baja',mes:'MAYO',valor:98000},
-  {nit:'900300010',nombre:'SANDRA MILENA OSPINA',cat:'Usuario Final',prio:'Baja',mes:'FEBRERO',valor:115000},
-  {nit:'900300011',nombre:'JULIAN ANDRES SUAREZ',cat:'Usuario Final',prio:'Baja',mes:'MARZO',valor:88000},
-];
+const CLIENTES_2026 = [{"nit": "830126596", "nombre": "HB SUPPLIER S A", "cat": "Dist. 2", "prio": "Alta", "mes": "FEBRERO", "valor": 15276066, "ciudad": "", "segmento": ""}, {"nit": "900977261", "nombre": "DISTRIBUCIONES P&T SAS", "cat": "Dist. 2", "prio": "Alta", "mes": "FEBRERO", "valor": 12458388, "ciudad": "", "segmento": ""}, {"nit": "901001978", "nombre": "ALFA LATINA S.A.S", "cat": "Dist. 2", "prio": "Alta", "mes": "ENERO", "valor": 8133890, "ciudad": "", "segmento": ""}, {"nit": "901043022", "nombre": "ALENO SAS", "cat": "Dist. 2", "prio": "Alta", "mes": "ENERO", "valor": 3579712, "ciudad": "", "segmento": ""}, {"nit": "900170626", "nombre": "PAÑALERA Y DROGUERIA ANGELA EL TALIBAN SAS", "cat": "Dist. 2", "prio": "Alta", "mes": "MAYO", "valor": 6475256, "ciudad": "", "segmento": ""}, {"nit": "912105980", "nombre": "FRANCISCO JAVIER MORENO RIVERO", "cat": "Dist. May.", "prio": "Alta", "mes": "ABRIL", "valor": 3443600, "ciudad": "", "segmento": ""}, {"nit": "830049630", "nombre": "PRODUCTOS Y SUMINISTROS S.A.S", "cat": "Dist. May.", "prio": "Alta", "mes": "ABRIL", "valor": 2512800, "ciudad": "", "segmento": ""}, {"nit": "830126596b", "nombre": "VEYALTHI GROUP SAS", "cat": "Dist. 2", "prio": "Alta", "mes": "FEBRERO", "valor": 1931220, "ciudad": "", "segmento": ""}, {"nit": "882350280", "nombre": "JHON JAIRO RAMIREZ FLOREZ", "cat": "Dist. 2", "prio": "Media", "mes": "FEBRERO", "valor": 848100, "ciudad": "", "segmento": ""}, {"nit": "820000048", "nombre": "COOSBOY", "cat": "Dist. 2", "prio": "Media", "mes": "FEBRERO", "valor": 682640, "ciudad": "", "segmento": ""}, {"nit": "138403300", "nombre": "ALFREDO ORDOÑEZ ORTEGA", "cat": "Dist. May.", "prio": "Media", "mes": "ABRIL", "valor": 1817235, "ciudad": "", "segmento": ""}, {"nit": "1098723233", "nombre": "CINDY KARINA CALDERON ISAZA", "cat": "Dist. 2", "prio": "Media", "mes": "ABRIL", "valor": 1369230, "ciudad": "", "segmento": ""}, {"nit": "912311450", "nombre": "JAIME MIGUEL CAMACHO SANDOVAL", "cat": "Dist. May.", "prio": "Media", "mes": "ENERO", "valor": 143874, "ciudad": "", "segmento": ""}, {"nit": "37238854", "nombre": "ROSALBA MARIA CARRERO DE SEPULVEDA", "cat": "Dist. May.", "prio": "Media", "mes": "ENERO", "valor": 672240, "ciudad": "", "segmento": ""}, {"nit": "901413030", "nombre": "GEVURAH ENERCOM S.A.S", "cat": "Dist. May.", "prio": "Media", "mes": "MARZO", "valor": 350794, "ciudad": "", "segmento": ""}, {"nit": "901563697", "nombre": "MEDICAL PRINTER S.A.S.", "cat": "Dist. May.", "prio": "Media", "mes": "FEBRERO", "valor": 449258, "ciudad": "", "segmento": ""}, {"nit": "901455459", "nombre": "SUPLIMAX GROUP S.A.S", "cat": "Dist. 2", "prio": "Media", "mes": "MAYO", "valor": 204632, "ciudad": "", "segmento": ""}, {"nit": "901882572", "nombre": "C&M COMERCIALIZADORA SAS", "cat": "Dist. 2", "prio": "Media", "mes": "MAYO", "valor": 185276, "ciudad": "", "segmento": ""}, {"nit": "900200009", "nombre": "HOSPITAL REGIONAL DEL NORTE", "cat": "Dist. Min.", "prio": "Media", "mes": "FEBRERO", "valor": 890000, "ciudad": "", "segmento": ""}, {"nit": "900200001", "nombre": "DROGUERIA CENTRAL", "cat": "Dist. Min.", "prio": "Baja", "mes": "MARZO", "valor": 320000, "ciudad": "", "segmento": ""}, {"nit": "900200002", "nombre": "CLINICA SAN JOSE", "cat": "Dist. Min.", "prio": "Baja", "mes": "ABRIL", "valor": 450000, "ciudad": "", "segmento": ""}, {"nit": "900200003", "nombre": "FARMACIA NUEVA ERA", "cat": "Dist. Min.", "prio": "Baja", "mes": "MAYO", "valor": 280000, "ciudad": "", "segmento": ""}, {"nit": "900200004", "nombre": "LABORATORIO DENTAL SONRISA", "cat": "Dist. Min.", "prio": "Baja", "mes": "FEBRERO", "valor": 190000, "ciudad": "", "segmento": ""}, {"nit": "900200005", "nombre": "CONSULTORIO DR. PEREZ", "cat": "Dist. Min.", "prio": "Baja", "mes": "MARZO", "valor": 350000, "ciudad": "", "segmento": ""}, {"nit": "900200006", "nombre": "SALUD TOTAL IPS", "cat": "Dist. Min.", "prio": "Baja", "mes": "ABRIL", "valor": 420000, "ciudad": "", "segmento": ""}, {"nit": "900200007", "nombre": "CENTRO MEDICO INTEGRAL", "cat": "Dist. Min.", "prio": "Baja", "mes": "MAYO", "valor": 380000, "ciudad": "", "segmento": ""}, {"nit": "900200008", "nombre": "DROGUERIA EL BIENESTAR", "cat": "Dist. Min.", "prio": "Baja", "mes": "MARZO", "valor": 210000, "ciudad": "", "segmento": ""}, {"nit": "900200010", "nombre": "CLINICA ODONTOLOGICA SONRIA", "cat": "Dist. Min.", "prio": "Baja", "mes": "ABRIL", "valor": 320000, "ciudad": "", "segmento": ""}, {"nit": "900200011", "nombre": "VETERINARIA SAN FRANCISCO", "cat": "Dist. Min.", "prio": "Baja", "mes": "MAYO", "valor": 175000, "ciudad": "", "segmento": ""}, {"nit": "900200012", "nombre": "ASEO TOTAL LTDA", "cat": "Dist. Min.", "prio": "Baja", "mes": "MARZO", "valor": 290000, "ciudad": "", "segmento": ""}, {"nit": "900200013", "nombre": "MULTISERVICIOS CLEAN", "cat": "Dist. Min.", "prio": "Baja", "mes": "ABRIL", "valor": 340000, "ciudad": "", "segmento": ""}, {"nit": "900200014", "nombre": "HOGAR FELIZ SAS", "cat": "Dist. Min.", "prio": "Baja", "mes": "MAYO", "valor": 155000, "ciudad": "", "segmento": ""}, {"nit": "900200015", "nombre": "LAVANDERIA MODERNA", "cat": "Dist. Min.", "prio": "Baja", "mes": "FEBRERO", "valor": 230000, "ciudad": "", "segmento": ""}, {"nit": "900200016", "nombre": "EMPRESA DE ASEO LIMPIA", "cat": "Dist. Min.", "prio": "Baja", "mes": "MARZO", "valor": 310000, "ciudad": "", "segmento": ""}, {"nit": "900200017", "nombre": "COMERCIALIZADORA VIDA SANA", "cat": "Dist. Min.", "prio": "Baja", "mes": "ABRIL", "valor": 275000, "ciudad": "", "segmento": ""}, {"nit": "900200018", "nombre": "INSUMOS MEDICOS DEL NORTE", "cat": "Dist. Min.", "prio": "Baja", "mes": "MAYO", "valor": 195000, "ciudad": "", "segmento": ""}, {"nit": "900200019", "nombre": "DISTRIBUCIONES LIMPIAS SAS", "cat": "Dist. Min.", "prio": "Baja", "mes": "MARZO", "valor": 360000, "ciudad": "", "segmento": ""}, {"nit": "900200020", "nombre": "CENTRO DE ESTETICA BELLA", "cat": "Dist. Min.", "prio": "Baja", "mes": "ABRIL", "valor": 145000, "ciudad": "", "segmento": ""}, {"nit": "900200021", "nombre": "SERVICIOS AMBIENTALES SA", "cat": "Dist. Min.", "prio": "Baja", "mes": "MAYO", "valor": 265000, "ciudad": "", "segmento": ""}, {"nit": "900300001", "nombre": "PEDRO ANTONIO GARCIA", "cat": "Usuario Final", "prio": "Baja", "mes": "ABRIL", "valor": 85000, "ciudad": "", "segmento": ""}, {"nit": "900300002", "nombre": "MARIA TERESA RINCON", "cat": "Usuario Final", "prio": "Baja", "mes": "MAYO", "valor": 120000, "ciudad": "", "segmento": ""}, {"nit": "900300003", "nombre": "JORGE HUMBERTO SILVA", "cat": "Usuario Final", "prio": "Baja", "mes": "MARZO", "valor": 95000, "ciudad": "", "segmento": ""}, {"nit": "900300004", "nombre": "ANA LUCIA BERMUDEZ", "cat": "Usuario Final", "prio": "Baja", "mes": "FEBRERO", "valor": 145000, "ciudad": "", "segmento": ""}, {"nit": "900300005", "nombre": "CARLOS ANDRES MORA", "cat": "Usuario Final", "prio": "Baja", "mes": "ABRIL", "valor": 78000, "ciudad": "", "segmento": ""}, {"nit": "900300006", "nombre": "LUZ MARINA CASTELLANOS", "cat": "Usuario Final", "prio": "Baja", "mes": "MAYO", "valor": 110000, "ciudad": "", "segmento": ""}, {"nit": "900300007", "nombre": "RAFAEL HERNANDEZ NIETO", "cat": "Usuario Final", "prio": "Baja", "mes": "MARZO", "valor": 89000, "ciudad": "", "segmento": ""}, {"nit": "900300008", "nombre": "DIANA PATRICIA VARGAS", "cat": "Usuario Final", "prio": "Baja", "mes": "ABRIL", "valor": 132000, "ciudad": "", "segmento": ""}, {"nit": "900300009", "nombre": "HUGO ALBERTO TORRES", "cat": "Usuario Final", "prio": "Baja", "mes": "MAYO", "valor": 98000, "ciudad": "", "segmento": ""}, {"nit": "900300010", "nombre": "SANDRA MILENA OSPINA", "cat": "Usuario Final", "prio": "Baja", "mes": "FEBRERO", "valor": 115000, "ciudad": "", "segmento": ""}, {"nit": "900300011", "nombre": "JULIAN ANDRES SUAREZ", "cat": "Usuario Final", "prio": "Baja", "mes": "MARZO", "valor": 88000, "ciudad": "", "segmento": ""}];
+const CLIENTES_HIST = [{"nit": "900319471", "nombre": "OPERANDO MEDICOS & QUIRURGICOS S.A.", "cat": "Distribuidor 2", "prio": "Alta", "segmento": "Dormido Reciente", "valor": 7553956, "ciudad": "BUCARAMANGA", "mes": "2024"}, {"nit": "804013374", "nombre": "PROMEFAR DISTRIBUCIONES PRODUCTOS MEDICOS FARMACEUTICOS S.A.", "cat": "Mayorista", "prio": "Alta", "segmento": "Dormido Reciente", "valor": 14734930, "ciudad": "BUCARAMANGA", "mes": "2024"}, {"nit": "79838587", "nombre": "HECTOR HERNAN SOLANO CHACON", "cat": "Distribuidor 2", "prio": "Alta", "segmento": "Dormido Reciente", "valor": 24068352, "ciudad": "BOGOTA", "mes": "2024"}, {"nit": "63328212", "nombre": "MARTHA CECILIA PARRA NUNCIRA", "cat": "Mayorista", "prio": "Alta", "segmento": "Dormido Reciente", "valor": 9716171, "ciudad": "BUCARAMANGA", "mes": "2024"}, {"nit": "901686565", "nombre": "SURTIMEDICOS STORES SAS", "cat": "Minorista", "prio": "Alta", "segmento": "Dormido Reciente", "valor": 5154695, "ciudad": "MEDELLIN", "mes": "2024"}, {"nit": "1093770378", "nombre": "EDWIN ANDRES MONSALVE ORTEGA", "cat": "Distribuidor 2", "prio": "Alta", "segmento": "Dormido Reciente", "valor": 10828916, "ciudad": "CUCUTA", "mes": "2024"}, {"nit": "900938981", "nombre": "BIOMEDSAN S.A.S", "cat": "Mayorista", "prio": "Alta", "segmento": "Dormido Reciente", "valor": 10450629, "ciudad": "PIEDECUESTA", "mes": "2024"}, {"nit": "901792563", "nombre": "COMERCIALIZADORA DISPENSACION FARMACEUTICA E INSUMOS MEDICOS", "cat": "Mayorista", "prio": "Alta", "segmento": "Dormido Reciente", "valor": 9970688, "ciudad": "BUCARAMANGA", "mes": "2024"}, {"nit": "901623342", "nombre": "CREARTIDEAS 360 S.A.S", "cat": "Mayorista", "prio": "Alta", "segmento": "Dormido Reciente", "valor": 7920000, "ciudad": "BOGOTA", "mes": "2024"}, {"nit": "91294723", "nombre": "WILSON PRADA GOMEZ", "cat": "Minorista", "prio": "Alta", "segmento": "Dormido Reciente", "valor": 6739848, "ciudad": "BUCARAMANGA", "mes": "2024"}, {"nit": "901384593", "nombre": "WILFERTEC SAS", "cat": "Minorista", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 902336, "ciudad": "TUNJA", "mes": "2024"}, {"nit": "830511317", "nombre": "MEDICLINICOS LIMITADA", "cat": "Minorista", "prio": "Baja", "segmento": "Perdido 2022", "valor": 3396680, "ciudad": "IBAGUE", "mes": "2022"}, {"nit": "890205820", "nombre": "SERVICIOS PETROLEROS SERPEL SAS", "cat": "Usuario Final", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 846520, "ciudad": "BUCARAMANGA", "mes": "2024"}, {"nit": "901568681", "nombre": "STERY LABS SAS", "cat": "Minorista", "prio": "Baja", "segmento": "Perdido 2023", "valor": 2541420, "ciudad": "BOGOTA", "mes": "2023"}, {"nit": "1017178514", "nombre": "JORGE IVAN LOPEZ CARDONA", "cat": "Usuario Final", "prio": "Baja", "segmento": "Perdido 2023", "valor": 2410234, "ciudad": "MEDELLIN", "mes": "2023"}, {"nit": "900927644", "nombre": "INSUMEDCO DEL CARIBE SAS", "cat": "Mayorista", "prio": "Baja", "segmento": "Perdido 2023", "valor": 2142844, "ciudad": "BARRANQUILLA", "mes": "2023"}, {"nit": "900229784", "nombre": "FABRIGRAY SAS", "cat": "Minorista", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 885552, "ciudad": "GIRON", "mes": "2024"}, {"nit": "12560674", "nombre": "RENATO FRANCISCO GUIDA DE ANDRES", "cat": "Usuario Final", "prio": "Baja", "segmento": "Perdido 2023", "valor": 888672, "ciudad": "BUCARAMANGA", "mes": "2023"}, {"nit": "901397518", "nombre": "INSUMEDICOS PLUS SOCIEDAD POR ACCIONES SIMPLIFICADAS SAS", "cat": "Minorista", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 637506, "ciudad": "FLORIDABLANCA", "mes": "2024"}, {"nit": "88216364", "nombre": "MEDICAL PRINTER / MIGUEL ANGEL ORTEGA CARRERO", "cat": "Mayorista", "prio": "Baja", "segmento": "Perdido 2023", "valor": 1173896, "ciudad": "CUCUTA", "mes": "2023"}, {"nit": "900486577", "nombre": "DENTAL NADER SAS", "cat": "Minorista", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 672000, "ciudad": "BOGOTA", "mes": "2024"}, {"nit": "900671204", "nombre": "SUPPLIES & SAFETY SAS", "cat": "Minorista", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 460840, "ciudad": "BARRANCABERMEJA", "mes": "2024"}, {"nit": "37546920", "nombre": "DIANA MARIA FLOREZ ORTIZ", "cat": "Usuario Final", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 228713, "ciudad": "BUCARAMANGA", "mes": "2024"}, {"nit": "804010612", "nombre": "INSUMMA BUSINESS GROUP FARMAVICOLA S.A.", "cat": "Usuario Final", "prio": "Baja", "segmento": "Perdido 2023", "valor": 808820, "ciudad": "GIRON", "mes": "2023"}, {"nit": "1098656857", "nombre": "WALTER JAVIER RUBIO SUAREZ", "cat": "Usuario Final", "prio": "Baja", "segmento": "Perdido 2023", "valor": 146928, "ciudad": "BELLO", "mes": "2023"}, {"nit": "1045677058", "nombre": "LINEY LORAINE GUTIERREZ OROZCO", "cat": "Minorista", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 700924, "ciudad": "SOLEDAD", "mes": "2024"}, {"nit": "1098629528", "nombre": "SANDRA YOLIMA PINTO MARIÑO", "cat": "Usuario Final", "prio": "Baja", "segmento": "Perdido 2023", "valor": 434010, "ciudad": "BUCARAMANGA", "mes": "2023"}, {"nit": "900802002", "nombre": "INVERSIONES QDE S.A.S", "cat": "Minorista", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 612260, "ciudad": "ARMENIA", "mes": "2024"}, {"nit": "1100959786", "nombre": "MARITZA SUAREZ DIAZ", "cat": "Minorista", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 570552, "ciudad": "SAN GIL", "mes": "2024"}, {"nit": "13513763", "nombre": "ASDRUBAL LEONEL BECERRA PINILLA", "cat": "Minorista", "prio": "Baja", "segmento": "Perdido 2023", "valor": 513600, "ciudad": "BUCARAMANGA", "mes": "2023"}, {"nit": "800199976", "nombre": "GERMAN PABLO SANDOVAL AUDIOFON SAS", "cat": "Minorista", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 403508, "ciudad": "FLORIDABLANCA", "mes": "2024"}, {"nit": "63333626", "nombre": "SONIA JUDITH SUAREZ CORDERO- LA RONDA", "cat": "Usuario Final", "prio": "Baja", "segmento": "Perdido 2023", "valor": 346620, "ciudad": "BUCARAMANGA", "mes": "2023"}, {"nit": "860074186", "nombre": "DISICO S.A", "cat": "Minorista", "prio": "Baja", "segmento": "Perdido 2023", "valor": 342400, "ciudad": "BOGOTA", "mes": "2023"}, {"nit": "63438434", "nombre": "JAZMIN ROCIO RAMIREZ HERNANDEZ", "cat": "Usuario Final", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 163440, "ciudad": "PIEDECUESTA", "mes": "2024"}, {"nit": "901472568", "nombre": "INSUMOS & DISPOSITIVOS SAS", "cat": "Usuario Final", "prio": "Baja", "segmento": "Perdido 2023", "valor": 318148, "ciudad": "BUCARAMANGA", "mes": "2023"}, {"nit": "63479598", "nombre": "NANCY LILIANA BARAJAS PEÑARANDA.", "cat": "Usuario Final", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 314116, "ciudad": "BUCARAMANGA", "mes": "2024"}, {"nit": "901811474", "nombre": "MEDLOGIST S.A.S.", "cat": "Minorista", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 287056, "ciudad": "ENVIGADO", "mes": "2024"}, {"nit": "900474659", "nombre": "COLOMBIANA DE SUMINISTROS Y TECNOLOGIA SAS", "cat": "Minorista", "prio": "Baja", "segmento": "Perdido 2023", "valor": 260000, "ciudad": "FLORIDABLANCA", "mes": "2023"}, {"nit": "63538953", "nombre": "KATHERINE EUCARI HERNANDEZ TRANSLAVIÑA", "cat": "Usuario Final", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 237970, "ciudad": "BUCARAMANGA", "mes": "2024"}, {"nit": "5565848", "nombre": "LUIS REINALDO GARCIA PEREZ / DROGUERIA LATINFARMA", "cat": "Minorista", "prio": "Baja", "segmento": "Perdido 2023", "valor": 58800, "ciudad": "BARRANCABERMEJA", "mes": "2023"}, {"nit": "13512575", "nombre": "HUGO ALBERTO DELGADO LOZANO", "cat": "Usuario Final", "prio": "Baja", "segmento": "Perdido 2023", "valor": 104728, "ciudad": "BUCARAMANGA", "mes": "2023"}, {"nit": "11203747", "nombre": "JOHN ALEJANDRO AYALA PUERTO", "cat": "Usuario Final", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 134939, "ciudad": "CHIA", "mes": "2024"}, {"nit": "1047516963", "nombre": "ABIGAIL SUSANA CARVALLIDO MENDOZA", "cat": "Usuario Final", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 91148, "ciudad": "FLORIDABLANCA", "mes": "2024"}, {"nit": "28418551", "nombre": "ROSA ALICIA MEJIA DE SALAS", "cat": "Usuario Final", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 71706, "ciudad": "BUCARAMANGA", "mes": "2024"}, {"nit": "860501601", "nombre": "CIMECEL S.A.S.", "cat": "Usuario Final", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 168484, "ciudad": "BUCARAMANGA", "mes": "2024"}, {"nit": "900522746", "nombre": "QUIMICOS PRIMA SAS", "cat": "Minorista", "prio": "Baja", "segmento": "Perdido 2023", "valor": 75771, "ciudad": "BUCARAMANGA", "mes": "2023"}, {"nit": "13831279", "nombre": "HENRY VESGA CARVAJAL", "cat": "Usuario Final", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 157058, "ciudad": "BUCARAMANGA", "mes": "2024"}, {"nit": "1098625547", "nombre": "KAT MEDICAL / KATERINE MARIN RINCON", "cat": "Minorista", "prio": "Baja", "segmento": "Perdido 2023", "valor": 78648, "ciudad": "BUCARAMANGA", "mes": "2023"}, {"nit": "1095834226", "nombre": "OMAR RICARDO SILVA CORTES", "cat": "Usuario Final", "prio": "Baja", "segmento": "Perdido 2023", "valor": 145170, "ciudad": "BUCARAMANGA", "mes": "2023"}, {"nit": "37814844", "nombre": "LIGIA INES CORREA ARDILA", "cat": "Usuario Final", "prio": "Baja", "segmento": "Perdido 2023", "valor": 141000, "ciudad": "BUCARAMANGA", "mes": "2023"}, {"nit": "1098735355", "nombre": "JORGE ANDRES SILGADO MORENO", "cat": "Usuario Final", "prio": "Baja", "segmento": "Perdido 2023", "valor": 14000, "ciudad": "BUCARAMANGA", "mes": "2023"}, {"nit": "63267782", "nombre": "ELSA SALAS", "cat": "Usuario Final", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 63616, "ciudad": "BUCARAMANGA", "mes": "2024"}, {"nit": "63316084", "nombre": "ALBA JANETH SALAS MEJIA", "cat": "Usuario Final", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 30383, "ciudad": "BOGOTA", "mes": "2024"}, {"nit": "1049608427", "nombre": "DIEGO ALEXANDER ALFONZO TOLOZA", "cat": "Usuario Final", "prio": "Baja", "segmento": "Perdido 2023", "valor": 45869, "ciudad": "FLORIDABLANCA", "mes": "2023"}, {"nit": "63270339", "nombre": "YOLANDA SALAS DE MEJIA", "cat": "Usuario Final", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 110828, "ciudad": "BUCARAMANGA", "mes": "2024"}, {"nit": "901127214", "nombre": "SALUD HOGAR DEL ORIENTE SAS", "cat": "Usuario Final", "prio": "Baja", "segmento": "Perdido 2023", "valor": 53456, "ciudad": "BUCARAMANGA", "mes": "2023"}, {"nit": "91523620", "nombre": "JOSE LUIS PADILLA", "cat": "Usuario Final", "prio": "Baja", "segmento": "Perdido 2023", "valor": 84500, "ciudad": "BUCARAMANGA", "mes": "2023"}, {"nit": "63340779", "nombre": "NOHORA RODRIGUEZ", "cat": "Usuario Final", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 65192, "ciudad": "BUCARAMANGA", "mes": "2024"}, {"nit": "900699578", "nombre": "GATECH IMPORTACIONES E.U.", "cat": "Usuario Final", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 62040, "ciudad": "BUCARAMANGA", "mes": "2024"}, {"nit": "98699096", "nombre": "JUAN PABLO RESTREPO RODRIGUEZ", "cat": "Usuario Final", "prio": "Baja", "segmento": "Perdido 2023", "valor": 59000, "ciudad": "BELLO", "mes": "2023"}, {"nit": "901348662", "nombre": "ALUMINIOS HIPERCENTRO DE ALUMINIO SAS", "cat": "Usuario Final", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 41211, "ciudad": "BUCARAMANGA", "mes": "2024"}, {"nit": "804008868", "nombre": "CENTRO DE ESTERILIZACION Y CURACIONES CEKURA LTDA", "cat": "Usuario Final", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 40549, "ciudad": "BUCARAMANGA", "mes": "2024"}, {"nit": "1098674727", "nombre": "ALEJANDRO SIERRA VARGAS", "cat": "Usuario Final", "prio": "Baja", "segmento": "Perdido 2023", "valor": 3896, "ciudad": "FLORIDABLANCA", "mes": "2023"}, {"nit": "1102364690", "nombre": "JHON GUTIERREZ", "cat": "Usuario Final", "prio": "Baja", "segmento": "Perdido 2023", "valor": 26580, "ciudad": "BUCARAMANGA", "mes": "2023"}, {"nit": "1098815576", "nombre": "LAURA MARCELA PORRAS VEGA", "cat": "Usuario Final", "prio": "Baja", "segmento": "Perdido 2023", "valor": 11000, "ciudad": "BUCARAMANGA", "mes": "2023"}, {"nit": "1005163057", "nombre": "JULIAN ANDRES GOMEZ GONZALEZ", "cat": "Usuario Final", "prio": "Baja", "segmento": "Perdido 2023", "valor": 26386, "ciudad": "BUCARAMANGA", "mes": "2023"}, {"nit": "92274103", "nombre": "MIGUEL ANGEL TASCO GARCIA", "cat": "Usuario Final", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 23211, "ciudad": "BUCARAMANGA", "mes": "2024"}, {"nit": "1001173091", "nombre": "YERLY DAYANA VELANDIA VEGA", "cat": "Empleado", "prio": "Baja", "segmento": "Dormido Reciente", "valor": 13908, "ciudad": "LEBRIJA", "mes": "2024"}, {"nit": "804003310", "nombre": "TECNIESTRUCTURAS LTDA", "cat": "Distribuidor 2", "prio": "Media", "segmento": "Perdido 2023", "valor": 18532000, "ciudad": "BUCARAMANGA", "mes": "2023"}, {"nit": "900277748", "nombre": "JP MERCADEO SAS", "cat": "Mayorista", "prio": "Media", "segmento": "Dormido Reciente", "valor": 4380660, "ciudad": "BOGOTA", "mes": "2024"}, {"nit": "900866855", "nombre": "PRODISEG SAS", "cat": "Distribuidor 2", "prio": "Media", "segmento": "Perdido 2023", "valor": 14417510, "ciudad": "BUCARAMANGA", "mes": "2023"}, {"nit": "890212407", "nombre": "DROGUERIA VIDA SAS", "cat": "Minorista", "prio": "Media", "segmento": "Dormido Reciente", "valor": 4060281, "ciudad": "BUCARAMANGA", "mes": "2024"}, {"nit": "830045470", "nombre": "XELATEM LTDA", "cat": "Distribuidor 2", "prio": "Media", "segmento": "Perdido 2023", "valor": 6266000, "ciudad": "BOGOTA", "mes": "2023"}, {"nit": "901525055", "nombre": "GLOBAL L&L LIMPIEZA Y LOGISTICA S.A.S", "cat": "Minorista", "prio": "Media", "segmento": "Perdido 2023", "valor": 5848146, "ciudad": "BUCARAMANGA", "mes": "2023"}, {"nit": "900493038", "nombre": "GLOBAL SAFE SALUD SAS", "cat": "Minorista", "prio": "Media", "segmento": "Dormido Reciente", "valor": 4523683, "ciudad": "CUCUTA", "mes": "2024"}, {"nit": "900309444", "nombre": "HOSPICLINIC DE COLOMBIA S.A.S", "cat": "Distribuidor 2", "prio": "Media", "segmento": "Perdido 2023", "valor": 4088960, "ciudad": "CUCUTA", "mes": "2023"}, {"nit": "830043637", "nombre": "M P PROMEDICAL LTDA", "cat": "Distribuidor 2", "prio": "Media", "segmento": "Perdido 2023", "valor": 3346000, "ciudad": "BOGOTA", "mes": "2023"}, {"nit": "900336765", "nombre": "LINEAS MEDICAS ODONTOLOGICAS S.A.S.", "cat": "Minorista", "prio": "Media", "segmento": "Dormido Reciente", "valor": 1430240, "ciudad": "BUCARAMANGA", "mes": "2024"}, {"nit": "900055881", "nombre": "INSUFARMACOS DEL ORIENTE LIMITADA", "cat": "Distribuidor 2", "prio": "Media", "segmento": "Perdido 2023", "valor": 3188288, "ciudad": "BUCARAMANGA", "mes": "2023"}, {"nit": "38551534", "nombre": "YENNY LILIANA CABEZAS AGREDO", "cat": "Minorista", "prio": "Media", "segmento": "Dormido Reciente", "valor": 4139170, "ciudad": "CALI", "mes": "2024"}, {"nit": "91495445", "nombre": "MIGUEL MARTINEZ SALAZAR", "cat": "Minorista", "prio": "Media", "segmento": "Dormido Reciente", "valor": 3937124, "ciudad": "BUCARAMANGA", "mes": "2024"}, {"nit": "804013696", "nombre": "METALEX INTERNACIONAL S.A. EMA", "cat": "Distribuidor 2", "prio": "Media", "segmento": "Perdido 2023", "valor": 3733000, "ciudad": "BUCARAMANGA", "mes": "2023"}, {"nit": "901382592", "nombre": "PROTEGEMOS BIO SAS", "cat": "Minorista", "prio": "Media", "segmento": "Dormido Reciente", "valor": 3389280, "ciudad": "BUCARAMANGA", "mes": "2024"}, {"nit": "900592852", "nombre": "GESTION TECNOLOGICA PROFESIONAL Y AMBIENTAL SAS", "cat": "Minorista", "prio": "Media", "segmento": "Dormido Reciente", "valor": 1309320, "ciudad": "BOGOTA", "mes": "2024"}, {"nit": "76329550", "nombre": "DIEGO ALFREDO RAMIREZ ROSAS", "cat": "Minorista", "prio": "Media", "segmento": "Dormido Reciente", "valor": 1474440, "ciudad": "POPAYAN", "mes": "2024"}, {"nit": "901413030", "nombre": "GEVURAH ENERCOM S.A.S", "cat": "Mayorista", "prio": "Media", "segmento": "Dormido Reciente", "valor": 2087880, "ciudad": "CALI", "mes": "2024"}, {"nit": "901559687", "nombre": "G & O CLINICOS Y QUIRURGICOS SAS", "cat": "Minorista", "prio": "Media", "segmento": "Dormido Reciente", "valor": 2000523, "ciudad": "BOGOTA", "mes": "2024"}, {"nit": "901586062", "nombre": "DISER CONSULTORES SAS", "cat": "Minorista", "prio": "Media", "segmento": "Dormido Reciente", "valor": 1774740, "ciudad": "BOGOTA", "mes": "2024"}, {"nit": "1049652802", "nombre": "JUAN DAVID MONTAÑEZ PARRA", "cat": "Minorista", "prio": "Media", "segmento": "Dormido Reciente", "valor": 1494600, "ciudad": "TUNJA", "mes": "2024"}, {"nit": "91285175", "nombre": "JUAN CARLOS BONILLA MONSALVE", "cat": "Minorista", "prio": "Media", "segmento": "Dormido Reciente", "valor": 1255392, "ciudad": "BUCARAMANGA", "mes": "2024"}, {"nit": "3151509", "nombre": "SALOMON ARDILA RIVERA", "cat": "Usuario Final", "prio": "Media", "segmento": "Dormido Reciente", "valor": 1389504, "ciudad": "BOGOTA", "mes": "2024"}, {"nit": "900416369", "nombre": "PROGRAMA PARA EL TRATAMIENTO Y ESTUDIO DE ENFERMEDADES HEMAT", "cat": "Usuario Final", "prio": "Media", "segmento": "Dormido Reciente", "valor": 1131750, "ciudad": "FLORIDABLANCA", "mes": "2024"}];
 
-let gestiones = JSON.parse(localStorage.getItem('zumotec_gestiones') || '{}');
+// Estado
+let campana = null;
+let clientesBase = [];
+let gestiones = {};
+let clientesNuevos = [];
 let scriptUrl = localStorage.getItem('zumotec_script_url') || '';
 let gestorNombre = localStorage.getItem('zumotec_gestor') || '';
 let filtroActivo = 'todos';
 let clienteActivo = null;
-let sels = {canal:'', resultado:'', interes:''};
+let sels = {canal:'', resultado:'', interes:'', prio:''};
+let selsNuevo = {cat:'', prio:''};
 let prodsSeleccionados = [];
 
 window.onload = () => {
   document.getElementById('gestor-input').value = gestorNombre;
   document.getElementById('script-url-input').value = scriptUrl;
   renderProductosGrid();
+  // Si hay campaña guardada, cargarla
+  const campGuardada = localStorage.getItem('zumotec_campana');
+  if (campGuardada) selCampana(campGuardada);
+};
+
+function selCampana(camp) {
+  campana = camp;
+  localStorage.setItem('zumotec_campana', camp);
+  gestiones = JSON.parse(localStorage.getItem('zumotec_gestiones_' + camp) || '{}');
+  clientesNuevos = JSON.parse(localStorage.getItem('zumotec_nuevos_' + camp) || '[]');
+
+  if (camp === '2026') {
+    clientesBase = CLIENTES_2026;
+    document.getElementById('camp-badge').textContent = '2026 ↓';
+    document.getElementById('header-sub').textContent = 'Volvemos por Ti · Jul–Sep 2026';
+    document.getElementById('av-camp-titulo').textContent = 'Progreso campaña 2026 (meta: 25 perfilados)';
+  } else {
+    clientesBase = CLIENTES_HIST;
+    document.getElementById('camp-badge').textContent = 'Hist ↓';
+    document.getElementById('header-sub').textContent = 'Reactivación Histórica · 2022-2025';
+    document.getElementById('av-camp-titulo').textContent = 'Progreso campaña histórica (meta: 46 perfilados)';
+  }
+
+  document.getElementById('camp-selector').classList.add('hidden');
   renderClientes();
   actualizarKPIs();
-};
+}
+
+function volverSelector() {
+  document.getElementById('camp-selector').classList.remove('hidden');
+}
 
 function cambiarTab(id, el) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('screen-'+id).classList.add('active');
+  document.getElementById('screen-' + id).classList.add('active');
   el.classList.add('active');
-  if (id==='avance') renderAvance();
+  if (id === 'avance') renderAvance();
 }
 
 function setFiltro(f, btn) {
   filtroActivo = f;
-  document.querySelectorAll('.filtro-btn').forEach(b => b.className='filtro-btn');
-  btn.classList.add('f-'+f);
+  document.querySelectorAll('.filtro-btn').forEach(b => b.className = 'filtro-btn');
+  btn.classList.add('f-' + f);
   renderClientes();
+}
+
+function todosClientes() {
+  return [...clientesBase.map(c => ({...c, esNuevo: false})),
+          ...clientesNuevos.map(c => ({...c, esNuevo: true}))];
 }
 
 function renderClientes() {
   const busq = document.getElementById('buscador').value.toLowerCase();
-  const lista = document.getElementById('lista-clientes');
+  const todos = todosClientes();
   const labelEstado = {pendiente:'Pendiente', contactado:'Contactado', perfilado:'Perfilado ✨', no_interesado:'No interesado'};
 
-  const filtrados = CLIENTES.filter(c => {
-    const r = (gestiones[c.nit]||{}).resultado || 'pendiente';
-    if (busq && !c.nombre.toLowerCase().includes(busq) && !c.nit.includes(busq)) return false;
-    if (filtroActivo==='todos') return true;
-    if (['pendiente','contactado','perfilado','no_interesado'].includes(filtroActivo)) return r===filtroActivo;
-    if (filtroActivo==='alta') return c.prio==='Alta';
-    if (filtroActivo==='media') return c.prio==='Media';
-    if (filtroActivo==='baja') return c.prio==='Baja';
+  const filtrados = todos.filter(c => {
+    const g = gestiones[c.nit] || {};
+    const r = g.resultado || 'pendiente';
+    const prio = (g.prio || c.prio || '').toLowerCase();
+    if (busq && !c.nombre.toLowerCase().includes(busq) && !String(c.nit).includes(busq)) return false;
+    if (filtroActivo === 'todos') return true;
+    if (['pendiente','contactado','perfilado','no_interesado'].includes(filtroActivo)) return r === filtroActivo;
+    if (filtroActivo === 'alta') return prio === 'alta';
+    if (filtroActivo === 'media') return prio === 'media';
+    if (filtroActivo === 'baja') return prio === 'baja';
+    if (filtroActivo === 'nuevo') return c.esNuevo;
     return true;
   });
 
+  const lista = document.getElementById('lista-clientes');
   if (!filtrados.length) {
-    lista.innerHTML='<div class="empty"><div class="empty-icon">🔍</div><p>Sin resultados con este filtro</p></div>';
+    lista.innerHTML = '<div class="empty"><div class="empty-icon">🔍</div><p>Sin resultados</p></div>';
     return;
   }
 
   lista.innerHTML = filtrados.map(c => {
-    const g = gestiones[c.nit]||{};
-    const r = g.resultado||'pendiente';
-    return `<div class="cliente-card prioridad-${c.prio.toLowerCase()}" onclick="abrirModal('${c.nit}')">
+    const g = gestiones[c.nit] || {};
+    const r = g.resultado || 'pendiente';
+    const prioActual = g.prio || c.prio || 'Baja';
+    const segTag = c.segmento === 'Dormido Reciente'
+      ? '<span class="tag-seg seg-dormido">Dormido 2024</span>'
+      : c.segmento === 'Perdido 2023' ? '<span class="tag-seg seg-perdido">Perdido 2023</span>'
+      : c.segmento === 'Perdido 2022' ? '<span class="tag-seg seg-perdido">Perdido 2022</span>' : '';
+    const nuevoTag = c.esNuevo ? '<span class="tag-nuevo">Nuevo</span>' : '';
+    const prioClass = c.esNuevo ? 'Nuevo' : prioActual;
+    const ref = c.esNuevo ? c.ref || '' : c.mes || '';
+    return \`<div class="cliente-card prio-\${prioClass}" onclick="abrirModal('\${c.nit}',\${c.esNuevo})">
       <div class="card-body">
         <div class="card-top">
-          <div class="cliente-nombre">${c.nombre}</div>
-          <span class="estado-pill estado-${r}">${labelEstado[r]}</span>
+          <div class="cliente-nombre">\${c.nombre}\${nuevoTag}\${segTag}</div>
+          <span class="estado-pill ep-\${r}">\${labelEstado[r]}</span>
         </div>
         <div class="card-meta">
-          <span class="meta-item"><span class="prio-dot prio-${c.prio.toLowerCase()}"></span><strong>${c.prio}</strong></span>
-          <span class="meta-item">📅 <strong>${c.mes}</strong></span>
-          <span class="meta-item">💰 <strong>$${(c.valor/1000000).toFixed(1)}M</strong></span>
-          <span class="meta-item">${c.cat}</span>
+          <span class="meta-item"><span class="prio-dot pd-\${prioClass}"></span><strong>\${prioClass}</strong></span>
+          <span class="meta-item">📅 <strong>\${ref}</strong></span>
+          \${c.valor ? \`<span class="meta-item">💰 <strong>$\${(c.valor/1000000).toFixed(1)}M</strong></span>\` : ''}
+          <span class="meta-item">\${c.cat || ''}</span>
+          \${c.ciudad ? \`<span class="meta-item">📍 \${c.ciudad}</span>\` : ''}
         </div>
-        ${g.nota?`<div class="card-nota">💬 ${g.nota}</div>`:''}
+        \${g.nota ? \`<div class="card-nota">💬 \${g.nota}</div>\` : ''}
       </div>
-    </div>`;
+    </div>\`;
   }).join('');
 }
 
-function abrirModal(nit) {
-  clienteActivo = CLIENTES.find(c=>c.nit===nit);
+function abrirModal(nit, esNuevo) {
+  const todos = todosClientes();
+  clienteActivo = todos.find(c => String(c.nit) === String(nit));
   if (!clienteActivo) return;
-  const g = gestiones[nit]||{};
-  document.getElementById('modal-prio').textContent = `Prioridad ${clienteActivo.prio} · ${clienteActivo.cat}`;
+  const g = gestiones[nit] || {};
+  const prioActual = g.prio || clienteActivo.prio || 'Baja';
+
+  document.getElementById('modal-tag').textContent = clienteActivo.esNuevo
+    ? '🟣 Cliente Nuevo · ' + (clienteActivo.cat || '')
+    : 'Prioridad ' + prioActual + ' · ' + (clienteActivo.cat || '') + (clienteActivo.segmento ? ' · ' + clienteActivo.segmento : '');
   document.getElementById('modal-nombre').textContent = clienteActivo.nombre;
-  document.getElementById('modal-meta').textContent = `NIT ${clienteActivo.nit} · Compró en ${clienteActivo.mes} · $${clienteActivo.valor.toLocaleString('es-CO')}`;
-  sels = {canal:g.canal||'', resultado:g.resultado||'', interes:g.interes||''};
+  document.getElementById('modal-meta').textContent = 'NIT ' + clienteActivo.nit
+    + (clienteActivo.ciudad ? ' · ' + clienteActivo.ciudad : '')
+    + (clienteActivo.valor ? ' · $' + clienteActivo.valor.toLocaleString('es-CO') : '');
+
+  sels = {canal: g.canal||'', resultado: g.resultado||'', interes: g.interes||'', prio: g.prio||prioActual};
   prodsSeleccionados = g.productos ? g.productos.split(', ').filter(Boolean) : [];
-  document.getElementById('campo-ciudad').value = g.ciudad||'';
-  document.getElementById('campo-seguimiento').value = g.seguimiento||'';
-  document.getElementById('campo-nota').value = g.nota||'';
-  ['canal','resultado','interes'].forEach(tipo => {
-    document.querySelectorAll(`#ops-${tipo} .opcion`).forEach(op => {
-      op.className='opcion';
-      if (op.dataset.val===sels[tipo]) op.classList.add(`sel-${op.dataset.val}`);
+  document.getElementById('campo-ciudad').value = g.ciudad || clienteActivo.ciudad || '';
+  document.getElementById('campo-seguimiento').value = g.seguimiento || '';
+  document.getElementById('campo-nota').value = g.nota || '';
+
+  ['canal','resultado','interes','prio'].forEach(tipo => {
+    document.querySelectorAll('#ops-' + tipo + ' .opcion').forEach(op => {
+      op.className = 'opcion';
+      if (op.dataset.val === sels[tipo]) op.classList.add('sel-' + op.dataset.val);
     });
   });
   document.querySelectorAll('.producto-check').forEach(p => {
     const checked = prodsSeleccionados.includes(p.dataset.prod);
     p.classList.toggle('checked', checked);
-    p.querySelector('.check-box').textContent = checked?'✓':'';
+    p.querySelector('.check-box').textContent = checked ? '✓' : '';
   });
   document.getElementById('modal-overlay').classList.add('open');
-  document.body.style.overflow='hidden';
+  document.body.style.overflow = 'hidden';
 }
 
-function cerrarModalFondo(e) { if (e.target===document.getElementById('modal-overlay')) cerrarModal(); }
+function cerrarModalFondo(e) { if (e.target === document.getElementById('modal-overlay')) cerrarModal(); }
 function cerrarModal() {
   document.getElementById('modal-overlay').classList.remove('open');
-  document.body.style.overflow='';
-  clienteActivo=null;
+  document.body.style.overflow = '';
+  clienteActivo = null;
 }
 
 function selOp(tipo, val, el) {
-  sels[tipo]=val;
-  document.querySelectorAll(`#ops-${tipo} .opcion`).forEach(op=>op.className='opcion');
-  el.classList.add(`sel-${val}`);
+  sels[tipo] = val;
+  document.querySelectorAll('#ops-' + tipo + ' .opcion').forEach(op => op.className = 'opcion');
+  el.classList.add('sel-' + val);
 }
 
 function renderProductosGrid() {
-  document.getElementById('productos-grid').innerHTML = PRODUCTOS.map(p=>
+  document.getElementById('productos-grid').innerHTML = PRODUCTOS.map(p =>
     `<label class="producto-check" data-prod="${p}" onclick="toggleProd(this)"><div class="check-box"></div>${p}</label>`
   ).join('');
 }
 
 function toggleProd(el) {
-  const prod=el.dataset.prod, checked=!el.classList.contains('checked');
-  el.classList.toggle('checked',checked);
-  el.querySelector('.check-box').textContent=checked?'✓':'';
-  prodsSeleccionados=checked?[...prodsSeleccionados,prod]:prodsSeleccionados.filter(p=>p!==prod);
+  const prod = el.dataset.prod, checked = !el.classList.contains('checked');
+  el.classList.toggle('checked', checked);
+  el.querySelector('.check-box').textContent = checked ? '✓' : '';
+  prodsSeleccionados = checked ? [...prodsSeleccionados, prod] : prodsSeleccionados.filter(p => p !== prod);
 }
 
 async function guardarGestion() {
   if (!clienteActivo) return;
-  if (!sels.canal) { showToast('Selecciona el canal de contacto','error'); return; }
-  if (!sels.resultado) { showToast('Selecciona el resultado del contacto','error'); return; }
-  const btn=document.getElementById('btn-guardar');
-  btn.classList.add('loading'); btn.textContent='Guardando...';
+  if (!sels.canal) { showToast('Selecciona el canal de contacto', 'error'); return; }
+  if (!sels.resultado) { showToast('Selecciona el resultado del contacto', 'error'); return; }
+  const btn = document.getElementById('btn-guardar');
+  btn.classList.add('loading'); btn.textContent = 'Guardando...';
+
   const datos = {
-    gestor: gestorNombre||'Sin asignar',
+    campana,
+    gestor: gestorNombre || 'Sin asignar',
     nit: clienteActivo.nit,
     nombre: clienteActivo.nombre,
     ciudad: document.getElementById('campo-ciudad').value.trim(),
-    categoria: clienteActivo.cat,
-    prioridad: clienteActivo.prio,
-    mes: clienteActivo.mes,
+    categoria: clienteActivo.cat || '',
+    prioridad: sels.prio || clienteActivo.prio || 'Baja',
+    mes: clienteActivo.mes || clienteActivo.segmento || '',
     canal: sels.canal,
     resultado: sels.resultado,
     interes: sels.interes,
     productos: prodsSeleccionados.join(', '),
     seguimiento: document.getElementById('campo-seguimiento').value,
     nota: document.getElementById('campo-nota').value.trim(),
+    esNuevo: clienteActivo.esNuevo ? 'Sí' : 'No',
+    prio: sels.prio,
   };
-  gestiones[clienteActivo.nit]=datos;
-  localStorage.setItem('zumotec_gestiones', JSON.stringify(gestiones));
+
+  gestiones[clienteActivo.nit] = datos;
+  localStorage.setItem('zumotec_gestiones_' + campana, JSON.stringify(gestiones));
+
   if (scriptUrl) {
-    try { await fetch(scriptUrl,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(datos)}); }
-    catch(err) { console.warn('Sin sincronización:',err); }
+    try { await fetch(scriptUrl, {method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(datos)}); }
+    catch(err) { console.warn('Sin sync:', err); }
   }
-  btn.classList.remove('loading'); btn.textContent='Guardar gestión';
+  btn.classList.remove('loading'); btn.textContent = 'Guardar gestión';
   cerrarModal(); renderClientes(); actualizarKPIs();
-  showToast(sels.resultado==='perfilado'?'✨ Cliente perfilado — excelente!':'✅ Gestión guardada','exito');
+  showToast(sels.resultado === 'perfilado' ? '✨ Cliente perfilado — excelente!' : '✅ Gestión guardada', 'exito');
+}
+
+// ── NUEVO CLIENTE ──
+function abrirModalNuevo() {
+  selsNuevo = {cat:'', prio:''};
+  ['nit','nombre','ciudad','ref'].forEach(id => document.getElementById('nuevo-' + id).value = '');
+  document.querySelectorAll('#ops-cat-nuevo .opcion, #ops-prio-nuevo .opcion').forEach(op => op.className = 'opcion');
+  document.getElementById('modal-nuevo-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function cerrarNuevoFondo(e) { if (e.target === document.getElementById('modal-nuevo-overlay')) cerrarNuevo(); }
+function cerrarNuevo() {
+  document.getElementById('modal-nuevo-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function selOpNuevo(tipo, val, el) {
+  selsNuevo[tipo] = val;
+  document.querySelectorAll('#ops-' + tipo + '-nuevo .opcion').forEach(op => op.className = 'opcion');
+  el.classList.add('sel-' + val);
+}
+function guardarNuevo() {
+  const nit = document.getElementById('nuevo-nit').value.trim();
+  const nombre = document.getElementById('nuevo-nombre').value.trim();
+  if (!nit || !nombre) { showToast('NIT y Nombre son obligatorios', 'error'); return; }
+  if (!selsNuevo.prio) { showToast('Asigna una prioridad', 'error'); return; }
+  const nuevo = {
+    nit: nit + '_n',
+    nombre, esNuevo: true,
+    cat: selsNuevo.cat || 'Sin categoría',
+    prio: selsNuevo.prio,
+    ciudad: document.getElementById('nuevo-ciudad').value.trim(),
+    ref: document.getElementById('nuevo-ref').value.trim() || 'Nuevo',
+    mes: 'Nuevo', valor: 0, segmento: '',
+  };
+  clientesNuevos.push(nuevo);
+  localStorage.setItem('zumotec_nuevos_' + campana, JSON.stringify(clientesNuevos));
+  cerrarNuevo(); renderClientes(); actualizarKPIs();
+  showToast('🟣 Cliente agregado a la campaña', 'exito');
 }
 
 function actualizarKPIs() {
-  let p=0,c=0,perf=0;
-  CLIENTES.forEach(cl=>{ const r=(gestiones[cl.nit]||{}).resultado||'pendiente'; if(r==='pendiente')p++; else if(r==='contactado')c++; else if(r==='perfilado')perf++; });
-  document.getElementById('kpi-pendientes').textContent=p;
-  document.getElementById('kpi-contactados').textContent=c;
-  document.getElementById('kpi-perfilados').textContent=perf;
-  document.getElementById('kpi-pct').textContent=Math.round((CLIENTES.length-p)/CLIENTES.length*100)+'%';
+  const todos = todosClientes();
+  let p=0,c=0,perf=0,ni=0,nuevos=0;
+  todos.forEach(cl => {
+    const r = (gestiones[cl.nit]||{}).resultado || 'pendiente';
+    if (r==='pendiente') p++; else if (r==='contactado') c++;
+    else if (r==='perfilado') perf++; else if (r==='no_interesado') ni++;
+    if (cl.esNuevo) nuevos++;
+  });
+  document.getElementById('kpi-total').textContent = todos.length;
+  document.getElementById('kpi-pendientes').textContent = p;
+  document.getElementById('kpi-contactados').textContent = c;
+  document.getElementById('kpi-perfilados').textContent = perf;
+  document.getElementById('kpi-nuevos').textContent = nuevos;
+  document.getElementById('kpi-pct').textContent = Math.round((todos.length - p) / Math.max(todos.length,1) * 100) + '%';
 }
 
 function renderAvance() {
-  const conteo={pendiente:0,contactado:0,perfilado:0,no_interesado:0};
-  const canales={llamada:0,whatsapp:0,email:0};
-  const interes={frio:0,tibio:0,listo:0};
-  const porPrio={Alta:0,Media:0,Baja:0};
-  CLIENTES.forEach(c=>{
-    const g=gestiones[c.nit]||{};
-    const r=g.resultado||'pendiente';
-    conteo[r]=(conteo[r]||0)+1;
-    if(g.canal) canales[g.canal]=(canales[g.canal]||0)+1;
-    if(g.interes) interes[g.interes]=(interes[g.interes]||0)+1;
-    if(r==='perfilado') porPrio[c.prio]=(porPrio[c.prio]||0)+1;
+  const todos = todosClientes();
+  const meta = campana === '2026' ? 25 : 46;
+  const conteo = {pendiente:0,contactado:0,perfilado:0,no_interesado:0};
+  const canales = {llamada:0,whatsapp:0,email:0};
+  const interes = {frio:0,tibio:0,listo:0};
+  const porPrio = {Alta:0,Media:0,Baja:0,Nuevo:0};
+  let nuevos = 0;
+
+  todos.forEach(c => {
+    const g = gestiones[c.nit] || {};
+    const r = g.resultado || 'pendiente';
+    conteo[r] = (conteo[r]||0)+1;
+    if (g.canal) canales[g.canal] = (canales[g.canal]||0)+1;
+    if (g.interes) interes[g.interes] = (interes[g.interes]||0)+1;
+    const prio = c.esNuevo ? 'Nuevo' : (g.prio || c.prio || 'Baja');
+    if (r==='perfilado') porPrio[prio] = (porPrio[prio]||0)+1;
+    if (c.esNuevo) nuevos++;
   });
-  const perf=conteo.perfilado||0, pct=Math.min(100,Math.round(perf/25*100));
-  document.getElementById('progress-bar').style.width=pct+'%';
-  document.getElementById('prog-izq').textContent=`${perf} perfilados`;
-  document.getElementById('prog-der').textContent=`${pct}% de la meta`;
-  document.getElementById('av-pendiente').textContent=conteo.pendiente||0;
-  document.getElementById('av-contactado').textContent=conteo.contactado||0;
-  document.getElementById('av-perfilado').textContent=conteo.perfilado||0;
-  document.getElementById('av-no_interesado').textContent=conteo.no_interesado||0;
-  document.getElementById('av-llamada').textContent=canales.llamada||0;
-  document.getElementById('av-whatsapp').textContent=canales.whatsapp||0;
-  document.getElementById('av-email').textContent=canales.email||0;
-  document.getElementById('av-frio').textContent=interes.frio||0;
-  document.getElementById('av-tibio').textContent=interes.tibio||0;
-  document.getElementById('av-listo').textContent=interes.listo||0;
-  document.getElementById('av-prio-alta').textContent=`${porPrio.Alta||0} perfilados`;
-  document.getElementById('av-prio-media').textContent=`${porPrio.Media||0} perfilados`;
-  document.getElementById('av-prio-baja').textContent=`${porPrio.Baja||0} perfilados`;
+
+  const perf = conteo.perfilado||0;
+  const pct = Math.min(100, Math.round(perf/meta*100));
+  document.getElementById('progress-bar').style.width = pct+'%';
+  document.getElementById('prog-izq').textContent = perf + ' perfilados';
+  document.getElementById('prog-der').textContent = pct+'% de la meta';
+  document.getElementById('av-pendiente').textContent = conteo.pendiente||0;
+  document.getElementById('av-contactado').textContent = conteo.contactado||0;
+  document.getElementById('av-perfilado').textContent = conteo.perfilado||0;
+  document.getElementById('av-no_interesado').textContent = conteo.no_interesado||0;
+  document.getElementById('av-nuevos').textContent = nuevos;
+  document.getElementById('av-llamada').textContent = canales.llamada||0;
+  document.getElementById('av-whatsapp').textContent = canales.whatsapp||0;
+  document.getElementById('av-email').textContent = canales.email||0;
+  document.getElementById('av-frio').textContent = interes.frio||0;
+  document.getElementById('av-tibio').textContent = interes.tibio||0;
+  document.getElementById('av-listo').textContent = interes.listo||0;
+  document.getElementById('av-prio-alta').textContent = (porPrio.Alta||0)+' perfilados';
+  document.getElementById('av-prio-media').textContent = (porPrio.Media||0)+' perfilados';
+  document.getElementById('av-prio-baja').textContent = (porPrio.Baja||0)+' perfilados';
+  document.getElementById('av-prio-nuevo').textContent = (porPrio.Nuevo||0)+' perfilados';
 }
 
-function guardarGestor() { gestorNombre=document.getElementById('gestor-input').value.trim(); localStorage.setItem('zumotec_gestor',gestorNombre); showToast(`✅ Gestor: ${gestorNombre}`,'exito'); }
-function guardarScriptUrl() { scriptUrl=document.getElementById('script-url-input').value.trim(); localStorage.setItem('zumotec_script_url',scriptUrl); showToast('✅ Sincronización activada','exito'); }
-function copiarCodigo() { navigator.clipboard.writeText(document.getElementById('codigo-script').value).then(()=>showToast('📋 Código copiado','exito')); }
-function showToast(msg,tipo='') { const t=document.getElementById('toast'); t.textContent=msg; t.className=`toast ${tipo} show`; setTimeout(()=>t.className='toast',2800); }
+function guardarGestor() { gestorNombre = document.getElementById('gestor-input').value.trim(); localStorage.setItem('zumotec_gestor', gestorNombre); showToast('✅ Gestor: ' + gestorNombre, 'exito'); }
+function guardarScriptUrl() { scriptUrl = document.getElementById('script-url-input').value.trim(); localStorage.setItem('zumotec_script_url', scriptUrl); showToast('✅ Sincronización activada', 'exito'); }
+function copiarCodigo() { navigator.clipboard.writeText(document.getElementById('codigo-script').value).then(() => showToast('📋 Código copiado', 'exito')); }
+function showToast(msg, tipo='') { const t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast ' + tipo + ' show'; setTimeout(() => t.className = 'toast', 2800); }
 </script>
 </body>
 </html>
