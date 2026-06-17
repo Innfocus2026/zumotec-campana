@@ -967,8 +967,8 @@ function confirmarExportar() {
   else exportarPDF(filtro, anio);
 }
 
-function exportarExcel(exportarExcel(
-  const datos = getDatosExportar();
+function exportarExcel(filtro='todos', anio='todos') {
+  const datos = getDatosExportar(filtro, anio);
   if (!datos.length) { showToast('No hay datos para exportar', 'error'); return; }
   const ws = XLSX.utils.json_to_sheet(datos);
   // Anchos de columna
