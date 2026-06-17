@@ -244,7 +244,8 @@
     <span class="search-icon">🔍</span>
     <input class="search-input" type="text" placeholder="Buscar cliente..." id="buscador" oninput="renderClientes()">
   </div>
-  <div class="filtros">
+  <!-- Filtros estado/prioridad -->
+  <div class="filtros" id="filtros-principales">
     <button class="filtro-btn f-todos" onclick="setFiltro('todos',this)">Todos</button>
     <button class="filtro-btn" onclick="setFiltro('pendiente',this)">Pendiente</button>
     <button class="filtro-btn" onclick="setFiltro('contactado',this)">Contactado</button>
@@ -254,6 +255,15 @@
     <button class="filtro-btn" onclick="setFiltro('baja',this)">🟢 Baja</button>
     <button class="filtro-btn" onclick="setFiltro('nuevo',this)">🟣 Nuevos</button>
   </div>
+  <!-- Filtros por año (solo campaña histórica) -->
+  <div class="filtros" id="filtros-anio" style="display:none;">
+    <span style="font-size:0.7rem;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.08em;padding:6px 4px;flex-shrink:0;">Año:</span>
+    <button class="filtro-btn f-todos" onclick="setFiltroAnio('todos',this)">Todos</button>
+    <button class="filtro-btn" onclick="setFiltroAnio('2022',this)">2022</button>
+    <button class="filtro-btn" onclick="setFiltroAnio('2023',this)">2023</button>
+    <button class="filtro-btn" onclick="setFiltroAnio('2024',this)">2024</button>
+    <button class="filtro-btn" onclick="setFiltroAnio('2025',this)">2025</button>
+  </div>
   <button class="btn-agregar" onclick="abrirModalNuevo()">＋ Agregar cliente nuevo</button>
   <div id="lista-clientes"></div>
 </div>
@@ -262,10 +272,10 @@
 <div class="screen" id="screen-avance">
   <!-- Botones exportar -->
   <div style="display:flex;gap:10px;margin-bottom:12px;">
-    <button onclick="exportarExcel()" style="flex:1;padding:13px;background:#1D6F42;color:white;border:none;border-radius:var(--radius);font-size:0.88rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+    <button onclick="abrirModalExportar('excel')" style="flex:1;padding:13px;background:#1D6F42;color:white;border:none;border-radius:var(--radius);font-size:0.88rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
       📊 Exportar Excel
     </button>
-    <button onclick="exportarPDF()" style="flex:1;padding:13px;background:#C0392B;color:white;border:none;border-radius:var(--radius);font-size:0.88rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+    <button onclick="abrirModalExportar('pdf')" style="flex:1;padding:13px;background:#C0392B;color:white;border:none;border-radius:var(--radius);font-size:0.88rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
       📄 Exportar PDF
     </button>
   </div>
@@ -344,13 +354,13 @@
   if (hoja.getLastRow() === 0) {
     hoja.appendRow([
       "A-Fecha","B-Gestor","C-NIT","D-Nombre",
-      "E-Ciudad","F-Categoria","G-Prioridad","H-Referencia",
-      "I-Canal","J-Resultado","K-Interes","L-Productos",
-      "M-Seguimiento","N-Nota","O-Es Nuevo"
+      "E-Ciudad","F-Celular","G-Categoria","H-Prioridad","I-Referencia",
+      "J-Canal","K-Resultado","L-Interes","M-Productos",
+      "N-Seguimiento","O-Nota","P-Es Nuevo"
     ]);
   }
   hoja.appendRow([
-    new Date(), d.gestor, d.nit, d.nombre, d.ciudad,
+    new Date(), d.gestor, d.nit, d.nombre, d.ciudad, d.celular,
     d.categoria, d.prioridad, d.mes, d.canal, d.resultado,
     d.interes, d.productos, d.seguimiento, d.nota, d.esNuevo
   ]);
@@ -412,6 +422,55 @@ function doGet(e) {
       <button class="btn-guardar" id="btn-guardar" onclick="guardarGestion()">Guardar gestión</button>
       <button class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
       <button class="btn-eliminar" id="btn-eliminar" onclick="eliminarCliente()" style="display:none;width:100%;margin-top:8px;padding:12px;background:transparent;color:var(--alta);font-size:0.85rem;font-weight:600;border:2px solid var(--alta);border-radius:var(--radius);cursor:pointer;">🗑 Eliminar este cliente de la campaña</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL EXPORTAR ══ -->
+<div class="modal-overlay" id="modal-export-overlay" onclick="cerrarExportFondo(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-tag" id="export-tag">📊 EXPORTAR</div>
+      <div class="modal-nombre">Selecciona qué exportar</div>
+    </div>
+    <div class="modal-body">
+      <label class="campo-label">¿Qué clientes incluir?</label>
+      <div style="display:flex;flex-direction:column;gap:8px;" id="export-opciones">
+        <label style="display:flex;align-items:center;gap:10px;padding:12px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);cursor:pointer;">
+          <input type="radio" name="export-filtro" value="todos" checked> <span style="font-size:0.88rem;font-weight:600;color:var(--navy);">Todos los clientes</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;padding:12px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);cursor:pointer;">
+          <input type="radio" name="export-filtro" value="gestionados"> <span style="font-size:0.88rem;font-weight:600;color:var(--navy);">Solo gestionados (con registro)</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;padding:12px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);cursor:pointer;">
+          <input type="radio" name="export-filtro" value="perfilados"> <span style="font-size:0.88rem;font-weight:600;color:var(--perfilado);">✨ Solo perfilados</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;padding:12px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);cursor:pointer;">
+          <input type="radio" name="export-filtro" value="alta"> <span style="font-size:0.88rem;font-weight:600;color:var(--alta);">🔴 Solo prioridad Alta</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;padding:12px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);cursor:pointer;">
+          <input type="radio" name="export-filtro" value="media"> <span style="font-size:0.88rem;font-weight:600;color:var(--media);">🟡 Solo prioridad Media</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;padding:12px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);cursor:pointer;">
+          <input type="radio" name="export-filtro" value="nuevos"> <span style="font-size:0.88rem;font-weight:600;color:var(--nuevo);">🟣 Solo clientes nuevos</span>
+        </label>
+      </div>
+
+      <!-- Filtro por año solo para campaña histórica -->
+      <div id="export-anio-wrap" style="display:none;">
+        <label class="campo-label">Filtrar por año de última compra</label>
+        <select class="input-field" id="export-anio" style="cursor:pointer;">
+          <option value="todos">Todos los años</option>
+          <option value="2022">2022</option>
+          <option value="2023">2023</option>
+          <option value="2024">2024</option>
+          <option value="2025">2025</option>
+        </select>
+      </div>
+
+      <button class="btn-guardar" id="btn-export-confirm" onclick="confirmarExportar()">Generar archivo</button>
+      <button class="btn-cancelar" onclick="cerrarExport()">Cancelar</button>
     </div>
   </div>
 </div>
@@ -483,6 +542,8 @@ let clientesNuevos = [];
 let scriptUrl = localStorage.getItem('zumotec_script_url') || '';
 let gestorNombre = localStorage.getItem('zumotec_gestor') || '';
 let filtroActivo = 'todos';
+let filtroAnio = 'todos';
+let tipoExport = 'excel';
 let clienteActivo = null;
 let sels = {canal:'', resultado:'', interes:'', prio:''};
 let selsNuevo = {cat:'', prio:''};
@@ -507,11 +568,15 @@ function selCampana(camp) {
     document.getElementById('camp-badge-texto').textContent = 'Camp. 2026';
     document.getElementById('header-sub').textContent = 'Volvemos por Ti · Jul–Sep 2026';
     document.getElementById('av-camp-titulo').textContent = 'Progreso campaña 2026 (meta: 25 perfilados)';
+    document.getElementById('filtros-anio').style.display = 'none';
+    document.getElementById('export-anio-wrap').style.display = 'none';
   } else {
     clientesBase = CLIENTES_HIST;
     document.getElementById('camp-badge-texto').textContent = 'Histórica';
     document.getElementById('header-sub').textContent = 'Reactivación Histórica · 2022-2025';
     document.getElementById('av-camp-titulo').textContent = 'Progreso campaña histórica (meta: 46 perfilados)';
+    document.getElementById('filtros-anio').style.display = 'flex';
+    document.getElementById('export-anio-wrap').style.display = 'block';
   }
 
   document.getElementById('camp-selector').classList.add('hidden');
@@ -533,8 +598,15 @@ function cambiarTab(id, el) {
 
 function setFiltro(f, btn) {
   filtroActivo = f;
-  document.querySelectorAll('.filtro-btn').forEach(b => b.className = 'filtro-btn');
+  document.querySelectorAll('#filtros-principales .filtro-btn').forEach(b => b.className = 'filtro-btn');
   btn.classList.add('f-' + f);
+  renderClientes();
+}
+
+function setFiltroAnio(anio, btn) {
+  filtroAnio = anio;
+  document.querySelectorAll('#filtros-anio .filtro-btn').forEach(b => b.className = 'filtro-btn');
+  btn.classList.add('f-todos');
   renderClientes();
 }
 
@@ -553,6 +625,8 @@ function renderClientes() {
     const r = g.resultado || 'pendiente';
     const prio = (g.prio || c.prio || '').toLowerCase();
     if (busq && !c.nombre.toLowerCase().includes(busq) && !String(c.nit).includes(busq)) return false;
+    // Filtro por año
+    if (filtroAnio !== 'todos' && String(c.mes) !== filtroAnio) return false;
     if (filtroActivo === 'todos') return true;
     if (['pendiente','contactado','perfilado','no_interesado'].includes(filtroActivo)) return r === filtroActivo;
     if (filtroActivo === 'alta') return prio === 'alta';
@@ -838,8 +912,16 @@ async function guardarScriptUrl() {
 function copiarCodigo() { navigator.clipboard.writeText(document.getElementById('codigo-script').value).then(() => showToast('📋 Código copiado', 'exito')); }
 function showToast(msg, tipo='') { const t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast ' + tipo + ' show'; setTimeout(() => t.className = 'toast', 2800); }
 
-function getDatosExportar() {
-  const todos = todosClientes();
+function getDatosExportar(filtro='todos', anio='todos') {
+  let todos = todosClientes();
+  // Filtrar por año
+  if (anio !== 'todos') todos = todos.filter(c => String(c.mes) === anio);
+  // Filtrar por criterio
+  if (filtro === 'gestionados') todos = todos.filter(c => gestiones[c.nit] && gestiones[c.nit].resultado && gestiones[c.nit].resultado !== 'pendiente');
+  else if (filtro === 'perfilados') todos = todos.filter(c => (gestiones[c.nit]||{}).resultado === 'perfilado');
+  else if (filtro === 'alta') todos = todos.filter(c => ((gestiones[c.nit]||{}).prio || c.prio) === 'Alta');
+  else if (filtro === 'media') todos = todos.filter(c => ((gestiones[c.nit]||{}).prio || c.prio) === 'Media');
+  else if (filtro === 'nuevos') todos = todos.filter(c => c.esNuevo);
   const labelEstado = {pendiente:'Pendiente', contactado:'Contactado', perfilado:'Perfilado', no_interesado:'No interesado'};
   const labelInteres = {frio:'Frío', tibio:'Tibio', listo:'Listo para comprar', '':''};
   const labelCanal = {llamada:'Llamada', whatsapp:'WhatsApp', email:'Email', '':''};
@@ -849,6 +931,7 @@ function getDatosExportar() {
       'NIT': String(c.nit).replace('_n',''),
       'Nombre': c.nombre,
       'Ciudad': g.ciudad || c.ciudad || '',
+      'Celular': c.cel || '',
       'Categoría': c.cat || '',
       'Prioridad': g.prio || c.prio || '',
       'Segmento/Ref': c.segmento || c.ref || '',
@@ -864,7 +947,27 @@ function getDatosExportar() {
   });
 }
 
-function exportarExcel() {
+function abrirModalExportar(tipo) {
+  tipoExport = tipo;
+  document.getElementById('export-tag').textContent = tipo === 'excel' ? '📊 EXPORTAR EXCEL' : '📄 EXPORTAR PDF';
+  document.getElementById('btn-export-confirm').textContent = tipo === 'excel' ? '📊 Generar Excel' : '📄 Generar PDF';
+  document.getElementById('modal-export-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function cerrarExportFondo(e) { if (e.target === document.getElementById('modal-export-overlay')) cerrarExport(); }
+function cerrarExport() {
+  document.getElementById('modal-export-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function confirmarExportar() {
+  const filtro = document.querySelector('input[name="export-filtro"]:checked').value;
+  const anio = document.getElementById('export-anio') ? document.getElementById('export-anio').value : 'todos';
+  cerrarExport();
+  if (tipoExport === 'excel') exportarExcel(filtro, anio);
+  else exportarPDF(filtro, anio);
+}
+
+function exportarExcel(exportarExcel(
   const datos = getDatosExportar();
   if (!datos.length) { showToast('No hay datos para exportar', 'error'); return; }
   const ws = XLSX.utils.json_to_sheet(datos);
@@ -882,9 +985,9 @@ function exportarExcel() {
   showToast('✅ Excel descargado', 'exito');
 }
 
-function exportarPDF() {
+function exportarPDF(filtro='todos', anio='todos') {
   const { jsPDF } = window.jspdf;
-  const datos = getDatosExportar();
+  const datos = getDatosExportar(filtro, anio);
   if (!datos.length) { showToast('No hay datos para exportar', 'error'); return; }
 
   const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
